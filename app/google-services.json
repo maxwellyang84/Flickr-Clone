@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "371592588049",
+    "firebase_url": "https://flickroreo.firebaseio.com",
+    "project_id": "flickroreo",
+    "storage_bucket": "flickroreo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:371592588049:android:3e7cd121f762bb5e",
+        "android_client_info": {
+          "package_name": "com.mendozae.teamflickr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "371592588049-9k1u0mqvkjop7qvnm5sghtui3flf0trq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdAiM4-NnCOEzk_ADX2i3xEo3mzftqxyM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
