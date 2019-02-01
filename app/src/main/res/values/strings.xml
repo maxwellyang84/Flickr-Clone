@@ -6,4 +6,11 @@
     <string name="tab_text_3">Tab 3</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="splashScreenButton">Get Started</string>
+    <string name="signUpButton" >Sign up</string>
+    <string name="alreadyHave">Already have an account? <b>Log in</b></string>
+    <string name="dontHave">Don\'t have an account? <b>Sign up</b></string>
+
 </resources>
+
