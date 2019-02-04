@@ -26,6 +26,7 @@ public class RealFeed extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(getResources().getString(R.string.app_name));
+        setSupportActionBar(toolbar);
         tabStatus = findViewById(R.id.tabStatus);
         tabCalls = findViewById(R.id.tabCalls);
         viewPager = findViewById(R.id.viewPager);
