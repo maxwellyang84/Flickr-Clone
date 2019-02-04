@@ -16,9 +16,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -28,25 +35,40 @@ public class MainActivity extends AppCompatActivity {
     private EditText username, email, password;
     private TextView switcher;
     private Boolean signUp;
-
+    public static FirebaseFirestore ddb = FirebaseFirestore.getInstance();
     private FirebaseAuth mAuth;
+    private String userName;
+    private String userEmail;
+    private String userPassword;
 
     public void enterMainFeed(View view) {
-        Log.i(email.getText().toString(), password.getText().toString());
+
+        userEmail = email.getText().toString();
+        userPassword = password.getText().toString();
+        userName = username.getText().toString();
+
+        Log.i(userEmail, userPassword);
         if (signUp){
             /**do DB check, check for username/email conflict
              * if no conflict do password checking (optional)
              * signup user and move to main feed
              * */
-            mAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
+            mAuth.createUserWithEmailAndPassword(userEmail, userPassword)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()){
+                                Map<String, String> userInfo = new HashMap<>();
+                                userInfo.put("Email", userEmail);
+                                userInfo.put("Password", userPassword);
+                                userInfo.put("Name", userName);
                                 Toast.makeText(MainActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(getApplicationContext(), MainFeed.class);
-                                startActivity(intent);
+                                ddb.collection("Users").document(userName).set(userInfo);
+                                updateUI();
                             } else {
+                                if(password.getText().length() <6){
+                                    Toast.makeText(MainActivity.this, "Password must contain at least 6 characters", Toast.LENGTH_SHORT).show();
+                                }
                                 Toast.makeText(MainActivity.this, "Registration Failed, Please Try Again", Toast.LENGTH_SHORT).show();
                                 return;
                             }
@@ -63,9 +85,9 @@ public class MainActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
                         Toast.makeText(MainActivity.this, "Log in Successful", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(getApplicationContext(), MainFeed.class);
-                        startActivity(intent);
+                        updateUI();
                     } else {
+
                         Toast.makeText(MainActivity.this, "Log in Unsuccessful", Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -73,6 +95,22 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+    }
+
+//    @Override
+//    public void onStart() {
+//
+//        super.onStart();
+//        FirebaseUser currentUser = mAuth.getCurrentUser();
+//        if(currentUser !=null){
+//
+//            updateUI();
+//        }
+//    }
+
+    private void updateUI(){
+        Intent intent = new Intent(getApplicationContext(), MainFeed.class);
+        startActivity(intent);
     }
     public void switcher (View view){
         if (signUp){ //if currently on signup, then switch to login mode
@@ -146,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         signUp = true;
+
 
         //set 1
         background = findViewById(R.id.splashBg);
