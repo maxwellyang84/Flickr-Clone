@@ -1,7 +1,9 @@
 package com.mendozae.teamflickr;
 
+import android.os.Build;
 import android.support.design.widget.TabItem;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,7 +36,20 @@ public class RealFeed extends AppCompatActivity {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-
+            viewPager.setCurrentItem(tab.getPosition());
+            if(tab.getPosition() == 1){
+                toolbar.setBackgroundColor(ContextCompat.getColor(RealFeed.this, R.color.colorAccent));
+                tabLayout.setBackgroundColor(ContextCompat.getColor(RealFeed.this, R.color.colorAccent));
+                getWindow().setStatusBarColor(ContextCompat.getColor(RealFeed.this, R.color.colorAccent));
+            }else if(tab.getPosition()==2){
+                toolbar.setBackgroundColor(ContextCompat.getColor(RealFeed.this, android.R.color.darker_gray));
+                tabLayout.setBackgroundColor(ContextCompat.getColor(RealFeed.this, android.R.color.darker_gray));
+                getWindow().setStatusBarColor(ContextCompat.getColor(RealFeed.this, android.R.color.darker_gray));
+            }else{
+                toolbar.setBackgroundColor(ContextCompat.getColor(RealFeed.this, R.color.colorPrimary));
+                tabLayout.setBackgroundColor(ContextCompat.getColor(RealFeed.this, R.color.colorPrimary));
+                getWindow().setStatusBarColor(ContextCompat.getColor(RealFeed.this, R.color.colorPrimaryDark));
+            }
             }
 
             @Override
@@ -46,6 +61,7 @@ public class RealFeed extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
 
             }
-        })
+        });
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
     }
 }
