@@ -1,8 +1,11 @@
 package com.mendozae.teamflickr;
 
 
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -10,29 +13,64 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+
 
 public class MainActivity extends AppCompatActivity {
     //Landing Page
-    ImageView background, logo, backButton;
-    Button getStarted, logInOrSignUp;
-    EditText username, email, password;
-    TextView switcher;
-    Boolean signUp;
+    private ImageView background, logo, backButton;
+    private Button getStarted, logInOrSignUp;
+    private EditText username, email, password;
+    private TextView switcher;
+    private Boolean signUp;
+
+    private FirebaseAuth mAuth;
 
     public void enterMainFeed(View view) {
-        if (signUp = true){
-
+        Log.i(email.getText().toString(), password.getText().toString());
+        if (signUp){
             /**do DB check, check for username/email conflict
              * if no conflict do password checking (optional)
              * signup user and move to main feed
              * */
+            mAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()){
+                                Toast.makeText(MainActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(getApplicationContext(), MainFeed.class);
+                                startActivity(intent);
+                            } else {
+                                Toast.makeText(MainActivity.this, "Registration Failed, Please Try Again", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                        }
+                    });
+
         } else {
             /**check DB for email/pass combination
              * login user and move to main feed
             * */
+            mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(MainActivity.this, "Log in Successful", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), MainFeed.class);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(MainActivity.this, "Log in Unsuccessful", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+            });
         }
 
     }
@@ -97,9 +135,6 @@ public class MainActivity extends AppCompatActivity {
         backButton.animate().alpha(1f).setDuration(1000);
     }
 
-    private FirebaseAuth mAuth;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
+        mAuth = FirebaseAuth.getInstance();
         signUp = true;
 
         //set 1
