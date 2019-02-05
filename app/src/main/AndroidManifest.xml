@@ -19,10 +19,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainFeed"
+            android:name=".UserInterface"
             android:label="@string/title_activity_main_feed"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".RealFeed"></activity>
     </application>
 
 </manifest>

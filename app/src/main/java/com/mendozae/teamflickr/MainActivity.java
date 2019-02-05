@@ -16,8 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -97,19 +95,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    @Override
-//    public void onStart() {
-//
-//        super.onStart();
-//        FirebaseUser currentUser = mAuth.getCurrentUser();
-//        if(currentUser !=null){
-//
-//            updateUI();
-//        }
-//    }
+    @Override
+    public void onStart() {
+
+        super.onStart();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser !=null){
+
+            updateUI();
+        }
+    }
 
     private void updateUI(){
-        Intent intent = new Intent(getApplicationContext(), MainFeed.class);
+        Intent intent = new Intent(getApplicationContext(), UserInterface.class);
         startActivity(intent);
     }
     public void switcher (View view){
