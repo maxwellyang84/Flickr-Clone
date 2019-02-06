@@ -11,8 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:theme="@style/ToolBarStyle"
-        app:popupTheme="@style/ToolBarPopupStyle"
-        android:background="white"
+
+
         android:minHeight="?attr/actionBarSize"
 
         app:title="Followers" />

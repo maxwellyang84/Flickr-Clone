@@ -22,7 +22,7 @@ public class PageAdapter extends FragmentPagerAdapter {
                 case 2:
                     return new UserProfile();
                 case 3:
-                    return new Camera();
+                    return new MyCamera();
                 default:
                     return null;
             }
