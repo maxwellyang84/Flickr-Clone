@@ -82,7 +82,9 @@ public class UserInterface extends AppCompatActivity {
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager); //declares viewPager
         final PageAdapter adapter = new PageAdapter(getSupportFragmentManager(), tabLayout.getTabCount()); //sets the adapter with the
         //support FragmentManager, and the number of tabs
+        viewPager.setOffscreenPageLimit(2);
         viewPager.setAdapter(adapter);
+
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){ //a listener for when tabs are selected
 

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -68,6 +69,7 @@ public class AboutEditActivity extends AppCompatActivity {
                     text.requestFocus();
 
                     imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+                    button.setText("Done");
                 }
             }
         });
@@ -112,10 +114,14 @@ public class AboutEditActivity extends AppCompatActivity {
                 text.setText(editText[i]);
             }
 
-            text.setOnClickListener(new View.OnClickListener() {
+            text.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public void onClick(View view) {
-                    button.setText("Done");
+                public boolean onTouch(View view, MotionEvent event) {
+
+                    if(MotionEvent.ACTION_UP == event.getAction()) {
+                        button.setText("Done");
+                    }
+                    return false;
                 }
             });
             return view;

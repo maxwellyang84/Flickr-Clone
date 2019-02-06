@@ -26,10 +26,10 @@ import android.widget.TextView;
  */
 public class About extends Fragment {
 
-    String[] title = {"Description", "Occupation", "Current city", "Hometown", "Website", "Tumblr", "Facebook", "Twitter", "Instagram",
+    String[] title = {"Github","Description", "Occupation", "Current city", "Hometown", "Website", "Tumblr", "Facebook", "Twitter", "Instagram",
     "Pinterest", "Email address"};
 
-    String[] description ={"Add Description...", "Add Occupation...", "Add Current city...", "Add Hometown...",
+    String[] description ={"Add Github...","Add Description...", "Add Occupation...", "Add Current city...", "Add Hometown...",
      "Add Website...", "Add Tumblr...", "Add Facebook...", "Add Twitter...", "Add Instagram...", "Add Pinterest...",
     "Add Email address..."};
 
