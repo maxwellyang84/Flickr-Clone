@@ -22,7 +22,7 @@ public class PageAdapter extends FragmentPagerAdapter {
                 case 2:
                     return new UserProfile(); //if the third tab is pressed, creates a new UserProfile() fragment object
                 case 3:
-                    return new Camera(); //if the fourth tab is pressed, creates a new Camera() fragment object
+                    return new MyCamera(); //if the fourth tab is pressed, creates a new Camera() fragment object
                 default:
                     return null;
             }
