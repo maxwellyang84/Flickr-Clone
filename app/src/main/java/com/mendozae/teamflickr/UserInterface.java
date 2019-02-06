@@ -56,42 +56,46 @@ public class UserInterface extends AppCompatActivity {
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main_feed);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout); //initializes the tablayout object
         for(int i = 0; i <=3; i++) {
-            tabLayout.addTab(tabLayout.newTab());
+            tabLayout.addTab(tabLayout.newTab()); //adds four tabs to the tablayout
         }
 
+        //sets the tab icon for each tab
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_photo_library);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_search);
         tabLayout.getTabAt(2).setIcon(R.drawable.ic_account);
         tabLayout.getTabAt(3).setIcon(R.drawable.ic_camera);
+
+        //sets the tab color for each tab
         for(int i = 0; i <=3; i++){
-            if(i==0) {
+            if(i==0) { //if the tab's the first one, it will be selected by default on start up so the colour will be white
                 int tabIconColor = ContextCompat.getColor(UserInterface.this, R.color.tabSelectedIconColor);
                 (tabLayout.getTabAt(i).getIcon()).setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-            }else{
+            }else{ //everything else will be great
                 int tabIconColor = ContextCompat.getColor(UserInterface.this, R.color.tabUnselectedIconColor);
                 (tabLayout.getTabAt(i).getIcon()).setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
             }
         }
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        final PageAdapter adapter = new PageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager); //declares viewPager
+        final PageAdapter adapter = new PageAdapter(getSupportFragmentManager(), tabLayout.getTabCount()); //sets the adapter with the
+        //support FragmentManager, and the number of tabs
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){ //a listener for when tabs are selected
 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-                int tabIconColor = ContextCompat.getColor(UserInterface.this, R.color.tabSelectedIconColor);
+                viewPager.setCurrentItem(tab.getPosition()); //when a tab is selected the viewPager moves to that tab location
+                int tabIconColor = ContextCompat.getColor(UserInterface.this, R.color.tabSelectedIconColor); //changes color of tab to highlighted
                 (tab.getIcon()).setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                int tabIconColor = ContextCompat.getColor(UserInterface.this, R.color.tabUnselectedIconColor);
+                int tabIconColor = ContextCompat.getColor(UserInterface.this, R.color.tabUnselectedIconColor); //changes color of tab to unhighlighted
                 (tab.getIcon()).setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
             }
 

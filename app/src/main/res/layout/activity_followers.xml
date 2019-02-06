@@ -10,10 +10,21 @@
         android:id="@+id/followertoolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:theme="@style/ToolBarStyle"
-        app:popupTheme="@style/ToolBarPopupStyle"
-        android:background="white"
+        android:background="?attr/colorPrimaryDark"
         android:minHeight="?attr/actionBarSize"
-
+        android:theme="@style/ToolBarStyle"
         app:title="Followers" />
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swiperefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/followertoolbar">
+
+    <ListView
+        android:id="@+id/followerlistview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/followerlistview"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>

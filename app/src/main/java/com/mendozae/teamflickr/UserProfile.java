@@ -1,6 +1,7 @@
 package com.mendozae.teamflickr;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -34,23 +35,24 @@ public class UserProfile extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        TabLayout tabLayout = (TabLayout) getView().findViewById(R.id.tablayout);
+        TabLayout tabLayout = (TabLayout) getView().findViewById(R.id.tablayout); //initializes the tablayout object
         for(int i = 0; i < 3; i++){
-            tabLayout.addTab(tabLayout.newTab());
+            tabLayout.addTab(tabLayout.newTab()); //adds three tabs
         }
-        tabLayout.getTabAt(0).setText("Public");
+        tabLayout.getTabAt(0).setText("Public"); //sets the name of tabs for each respective tab
         tabLayout.getTabAt(1).setText("Albums");
         tabLayout.getTabAt(2).setText("About");
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#FFFFFF")); //sets the tab indicator color
 
-        final ViewPager viewPager = (ViewPager) getView().findViewById(R.id.page);
+        final ViewPager viewPager = (ViewPager) getView().findViewById(R.id.page); //declares viewpager
         final UserProfilePagerAdapter adapter = new UserProfilePagerAdapter(getFragmentManager(),tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() { //sets an onTabSelected listener for when tabs are selected
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
+                viewPager.setCurrentItem(tab.getPosition()); //viewPager sets the tab position to the one that was selected
                 Log.i("info", "Selected tab");
             }
 
