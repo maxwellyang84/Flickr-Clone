@@ -1,6 +1,7 @@
 package com.mendozae.teamflickr;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
@@ -127,6 +128,16 @@ public class UserInterface extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void displayFollowers(View view){
+       Intent intent = new Intent(UserInterface.this, Followers.class);
+       startActivity(intent);
+    }
+
+    public void displayFollowing(View view){
+        Intent intent = new Intent(UserInterface.this, Following.class);
+        startActivity(intent);
     }
 
 }

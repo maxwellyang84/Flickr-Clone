@@ -22,6 +22,8 @@
             android:name=".UserInterface"
             android:label="@string/title_activity_main_feed"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Followers" />
+        <activity android:name=".Following"></activity>
     </application>
 
 </manifest>

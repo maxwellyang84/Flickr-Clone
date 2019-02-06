@@ -8,6 +8,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,7 @@ public class UserProfile extends Fragment {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
+                Log.i("info", "Selected tab");
             }
 
             @Override
@@ -65,8 +67,6 @@ public class UserProfile extends Fragment {
     }
 
 
-    // TODO: Rename method, update argument and hook method into UI event
-
-
+    
 
 }
