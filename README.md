@@ -1,3 +1,3 @@
-#Flickr Clone
+***Flickr Clone***
 
 
