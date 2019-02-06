@@ -1,4 +1,3 @@
-# flickr-clone
+#Flickr Clone
 
-***Flicker Clone
 
