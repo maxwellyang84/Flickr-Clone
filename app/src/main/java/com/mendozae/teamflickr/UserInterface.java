@@ -84,6 +84,7 @@ public class UserInterface extends AppCompatActivity {
         //support FragmentManager, and the number of tabs
         viewPager.setOffscreenPageLimit(2);
         viewPager.setAdapter(adapter);
+
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){ //a listener for when tabs are selected
 

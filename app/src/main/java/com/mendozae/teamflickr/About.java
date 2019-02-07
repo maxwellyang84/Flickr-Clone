@@ -2,10 +2,13 @@ package com.mendozae.teamflickr;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +18,31 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+
+import static com.mendozae.teamflickr.UserProfile.userReference;
+
+
+/**
+ * A simple {@link Fragment} subclass.
+ * Activities that contain this fragment must implement the
+ * {@link About.OnFragmentInteractionListener} interface
+ * to handle interaction events.
+ * Use the {@link About#newInstance} factory method to
+ * create an instance of this fragment.
+ */
 public class About extends Fragment {
 
-    String[] title = {"Description", "Occupation", "Current city", "Hometown", "Website", "Tumblr", "Facebook", "Twitter", "Instagram",
-    "Pinterest", "Email address"};
+    ArrayList<String> title;
 
-    String[] description ={"Add Description...", "Add Occupation...", "Add Current city...", "Add Hometown...",
-     "Add Website...", "Add Tumblr...", "Add Facebook...", "Add Twitter...", "Add Instagram...", "Add Pinterest...",
-    "Add Email address..."};
+    ArrayList<String> description;
 
     int[] image;
 
@@ -30,34 +50,73 @@ public class About extends Fragment {
     TextView descriptions;
     ImageView images;
 
+
+
+    @Override
+    public void onCreate(Bundle SavedInstanceState) {
+
+        super.onCreate(SavedInstanceState);
+
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_about, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        ListView listView = (ListView) getView().findViewById(R.id.aboutlistview);
-        image = new int[title.length];
-        for(int i = 0; i < title.length; i++){
-            image[i] = R.drawable.ic_arrow;
-        }
+    public void onResume() {
+        super.onResume();
+        Log.i("Resume", "Resumed");
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        final ListView listView = (ListView) getView().findViewById(R.id.aboutlistview);
 
 
 
-        CustomAdapter adapter = new CustomAdapter();
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(getContext(), AboutEditActivity.class);
-                intent.putExtra("title", title[i]);
-                intent.putExtra("description", description[i]);
-                startActivity(intent);
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot document = task.getResult();
+                    if(document.exists()){
+                        title = (ArrayList<String>)document.get("AboutKeys");
+                        description = (ArrayList<String>) document.get("AboutValues");
+                        image = new int[title.size()];
+                        for(int i = 0; i < title.size(); i++){
+                            image[i] = R.drawable.ic_arrow;
+                        }
+                        CustomAdapter adapter = new CustomAdapter();
+                        listView.setAdapter(adapter);
+                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                Intent intent = new Intent(getContext(), AboutEditActivity.class);
+                                intent.putExtra("title", title.get(i));
+                                intent.putExtra("description", description.get(i));
+                                startActivity(intent);
+                            }
+                        });
+
+
+                    }
+
+                }
             }
         });
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+
+
 
     }
 
@@ -86,8 +145,10 @@ public class About extends Fragment {
             descriptions = (TextView) view.findViewById(R.id.description);
             images = (ImageView)view.findViewById(R.id.arrow);
             images.setImageResource(image[i]);
-            titles.setText(title[i]);
-            descriptions.setText(description[i]);
+            titles.setText(title.get(i));
+
+            descriptions.setText(description.get(i));
+
             return view;
         }
     }
