@@ -3,9 +3,11 @@ package com.mendozae.teamflickr;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -20,12 +22,26 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+
+import static com.mendozae.teamflickr.UserProfile.userReference;
+import static com.mendozae.teamflickr.UserProfile.user;
+
 public class AboutEditActivity extends AppCompatActivity {
 
     String[] editText;
     EditText text;
     Button button;
     InputMethodManager imm;
+    String title;
+
 
 
     @Override
@@ -35,8 +51,10 @@ public class AboutEditActivity extends AppCompatActivity {
 
         button = (Button) findViewById(R.id.edit);
 
+
+
         Intent intent = getIntent();
-        String title = intent.getStringExtra("title");
+        title = intent.getStringExtra("title");
         String description = intent.getStringExtra("description");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.aboutedittoolbar);
@@ -63,8 +81,41 @@ public class AboutEditActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(button.getText().toString().equals("Done")){
-                    imm.hideSoftInputFromWindow(text.getWindowToken(), 0);
-                    onBackPressed();
+                    final String textValue = text.getText().toString();
+                    if(!textValue.equals("")) {
+                        userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    DocumentSnapshot snapshot = task.getResult();
+                                    if (snapshot.exists()) {
+                                        ArrayList<String> titles = (ArrayList<String>) snapshot.get("AboutKeys");
+                                        ArrayList<String> description = (ArrayList<String>) snapshot.get("AboutValues");
+                                        description.set(titles.indexOf(title), textValue);
+                                        userReference.update("AboutValues", description).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Log.i("Success", "Succeeded");
+                                                imm.hideSoftInputFromWindow(text.getWindowToken(), 0);
+                                                onBackPressed();
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.i("Failure", "Failed");
+                                            }
+                                        });
+
+                                    }
+                                }
+
+                            }
+                        });
+                    }else{
+                        imm.hideSoftInputFromWindow(text.getWindowToken(), 0);
+                        onBackPressed();
+                    }
+
             }else{
                     text.requestFocus();
 
@@ -108,7 +159,7 @@ public class AboutEditActivity extends AppCompatActivity {
         public View getView(int i, View view, ViewGroup viewGroup) {
             view = getLayoutInflater().inflate(R.layout.layout_about_edit_custom, null);
             text = (EditText) view.findViewById(R.id.editText);
-            if(editText[i].contains("Add")){
+            if(editText[i].equals("Add " + title +"...")){
                 text.setHint(editText[i]);
             }else{
                 text.setText(editText[i]);

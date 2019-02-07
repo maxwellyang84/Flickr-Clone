@@ -2,9 +2,11 @@ package com.mendozae.teamflickr;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -17,8 +19,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.w3c.dom.Document;
+
+import java.util.ArrayList;
+
+
 
 
 /**
@@ -31,8 +45,26 @@ import com.google.firebase.auth.FirebaseAuth;
  */
 public class UserProfile extends Fragment {
 
-    ImageButton mImageButton;
-    PopupMenu popup;
+    private ImageButton mImageButton;
+    private PopupMenu popup;
+    public static String user;
+    private TextView name;
+    private TextView following;
+    private TextView followers;
+    public static DocumentReference userReference;
+    private FirebaseFirestore mStore;
+
+
+
+    @Override
+    public void onCreate(Bundle SavedInstanceState) {
+
+        super.onCreate(SavedInstanceState);
+        user = MainActivity.sharedPreferences.getString("username", "hello");
+        mStore = FirebaseFirestore.getInstance();
+        userReference = mStore.collection("Users").document(user);
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,7 +75,31 @@ public class UserProfile extends Fragment {
     }
 
     @Override
+    public void onStart(){
+        super.onStart();
+        userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot snapshot = task.getResult();
+                    if(snapshot.exists()){
+                        followers = (TextView) getView().findViewById(R.id.followers);
+                        following = (TextView) getView().findViewById(R.id.following);
+                        Integer followersSize = ((ArrayList<String>)snapshot.get("Followers")).size();
+                        Integer followingSize = ((ArrayList<String>) snapshot.get("Following")).size();
+                        followers.setText(followersSize.toString() + " Followers");
+                        following.setText(followingSize.toString() + " Following");
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+
+        name = (TextView) getView().findViewById(R.id.name);
+        name.setText(user);
 
         mImageButton = (ImageButton) getView().findViewById(R.id.imageButton);
         popup = new PopupMenu(getContext(), mImageButton);
@@ -65,7 +121,7 @@ public class UserProfile extends Fragment {
         tabLayout.getTabAt(1).setText("Albums");
         tabLayout.getTabAt(2).setText("About");
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#FFFFFF")); //sets the tab indicator color
+        tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#F5F5F5")); //sets the tab indicator color
 
         final ViewPager viewPager = (ViewPager) getView().findViewById(R.id.page); //declares viewpager
         final UserProfilePagerAdapter adapter = new UserProfilePagerAdapter(getFragmentManager(),tabLayout.getTabCount());

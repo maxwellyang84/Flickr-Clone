@@ -1,6 +1,7 @@
 package com.mendozae.teamflickr;
 
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,35 +14,59 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+
+import static com.mendozae.teamflickr.UserProfile.userReference;
+import java.util.ArrayList;
+
 public class Followers extends AppCompatActivity {
 
-    String[] NAMES;
+
+    ArrayList<String> followerNames;
     String[] DESCRIPTIONS;
     int[] IMAGES;
     SwipeRefreshLayout swipeRefresh;
+    CustomAdapter adapter;
+    ListView listView;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_followers);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.followertoolbar);
+        toolbar = (Toolbar) findViewById(R.id.followertoolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setBackgroundColor(Color.parseColor("#333333"));
 
-        ListView listView = (ListView) findViewById(R.id.followinglistview);
-        CustomAdapter adapter = new CustomAdapter();
-        //listView.setAdapter(adapter);
-
-         swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onRefresh() {
-                Log.i("Info", "Refreshing");
-                updateFollowers();
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot snapshot = task.getResult();
+                    if(snapshot.exists()){
+                        followerNames = (ArrayList<String>) snapshot.get("Followers");
+                        listView = (ListView) findViewById(R.id.followerlistview);
+                        adapter = new CustomAdapter();
+                        listView.setAdapter(adapter);
+
+                        swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+                        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                            @Override
+                            public void onRefresh() {
+                                Log.i("Info", "Refreshing");
+                                updateFollowers();
+                            }
+                        });
+
+                    }
+                }
             }
         });
+
 
     }
 
@@ -50,7 +75,7 @@ public class Followers extends AppCompatActivity {
     private void updateFollowers(){
 
 
-
+        adapter.notifyDataSetChanged();
         swipeRefresh.setRefreshing(false);
     }
 
@@ -64,7 +89,7 @@ public class Followers extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return IMAGES.length;
+            return followerNames.size();
         }
 
         @Override
@@ -80,13 +105,13 @@ public class Followers extends AppCompatActivity {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             view = getLayoutInflater().inflate(R.layout.layout_custom, null);
-            ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
+            ImageView imageView = (ImageView) view.findViewById(R.id.pfp);
             TextView textView_name = (TextView) view.findViewById(R.id.name);
             TextView textView_desc = (TextView) view.findViewById(R.id.desc);
-            imageView.setImageResource(IMAGES[i]);
-            textView_name.setText(NAMES[i]);
-            textView_desc.setText(DESCRIPTIONS[i]);
-            return null;
+//            imageView.setImageResource(IMAGES[i]);
+            textView_name.setText(followerNames.get(i));
+//            textView_desc.setText(DESCRIPTIONS[i]);
+            return view;
         }
     }
 }

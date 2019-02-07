@@ -1,8 +1,11 @@
 package com.mendozae.teamflickr;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,10 +23,18 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+
 
 
 public class MainActivity extends AppCompatActivity {
@@ -33,11 +44,14 @@ public class MainActivity extends AppCompatActivity {
     private EditText username, email, password;
     private TextView switcher;
     private Boolean signUp;
-    public static FirebaseFirestore ddb = FirebaseFirestore.getInstance();
+    public FirebaseFirestore ddb = FirebaseFirestore.getInstance();
     private FirebaseAuth mAuth;
     private String userName;
     private String userEmail;
     private String userPassword;
+    public static SharedPreferences sharedPreferences;
+    Map<String, String> userInfo;
+
 
     public void enterMainFeed(View view) {
 
@@ -56,13 +70,22 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()){
-                                Map<String, String> userInfo = new HashMap<>();
-                                userInfo.put("Email", userEmail);
-                                userInfo.put("Password", userPassword);
-                                userInfo.put("Name", userName);
                                 Toast.makeText(MainActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
-                                ddb.collection("Users").document(userName).set(userInfo);
-                                updateUI();
+                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                        .setDisplayName(userName)
+                                        .build();
+                                mAuth.getCurrentUser().updateProfile(profileUpdates)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if(task.isSuccessful()){
+                                                    Log.i("Yes", "Successful");
+                                                    initializeFields();
+                                                    updateUI();
+                                                }
+                                            }
+                                        });
+
                             } else {
                                 if(password.getText().length() <6){
                                     Toast.makeText(MainActivity.this, "Password must contain at least 6 characters", Toast.LENGTH_SHORT).show();
@@ -94,6 +117,33 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+    /*
+    initializes fields for the database for the user that just signed up
+     */
+    private void initializeFields(){
+       List<String> title = Arrays.asList("Description", "Occupation", "Current city", "Hometown", "Website", "Tumblr", "Facebook", "Twitter", "Instagram",
+                "Pinterest", "Email address");
+      List<String> description =Arrays.asList("Add Description...", "Add Occupation...", "Add Current city...", "Add Hometown...",
+                "Add Website...", "Add Tumblr...", "Add Facebook...", "Add Twitter...", "Add Instagram...", "Add Pinterest...",
+                "Add Email address...");
+
+        Map<String, List<String>> userInfo3 = new HashMap<>();
+
+        userInfo.put("Email", userEmail);
+        userInfo.put("Password", userPassword);
+        userInfo.put("Name", userName);
+        ddb.collection("Users").document(userName).set(userInfo);
+
+        userInfo3.put("AboutKeys", title);
+        userInfo3.put("AboutValues", description);
+        userInfo3.put("Followers", new ArrayList<String>());
+        userInfo3.put("Following", new ArrayList<String>());
+        userInfo3.put("Comments Posted", new ArrayList<String>());
+        userInfo3.put("Previous Searches", new ArrayList<String>());
+        ddb.collection("Users").document(userName).set(userInfo3, SetOptions.merge());
+    }
+
+
 
     /*
     activates when the MainActivity class starts
@@ -113,6 +163,8 @@ sends the UI to UserInterface class
  */
     private void updateUI(){
         Intent intent = new Intent(getApplicationContext(), UserInterface.class);
+        sharedPreferences = this.getSharedPreferences("com.mendozae.teamflickr", Context.MODE_PRIVATE);
+        sharedPreferences.edit().putString("username", mAuth.getCurrentUser().getDisplayName()).apply();
         startActivity(intent);
     }
     public void switcher (View view){
@@ -187,6 +239,8 @@ sends the UI to UserInterface class
 
         mAuth = FirebaseAuth.getInstance();
         signUp = true;
+
+        userInfo = new HashMap<>();
 
 
         //set 1
