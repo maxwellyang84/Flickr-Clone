@@ -21,7 +21,8 @@
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorSecondary">@android:color/white</item>
         <item name="actionMenuTextColor">@android:color/white</item>
-        <item name="actionOverflowButtonStyle">@style/Widget.AppCompat.ActionButton.Overflow</item>
+
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
 
     </style>
 

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AboutEditActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/aboutedittoolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimaryDark"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ToolBarStyle">
+
+        <Button
+            android:id="@+id/edit"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:layout_marginRight="20dp"
+            android:text="Edit"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="end"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/my_button_bg"/>
+
+
+    </android.support.v7.widget.Toolbar>
+
+
+
+    <ListView
+        android:id="@+id/textlistview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/aboutedittoolbar"
+        />
+</RelativeLayout>

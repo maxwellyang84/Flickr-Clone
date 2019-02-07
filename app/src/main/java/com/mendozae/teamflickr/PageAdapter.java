@@ -16,13 +16,13 @@ public class PageAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position){
             switch(position){
                 case 0:
-                    return new MainFeed();
+                    return new MainFeed(); //if the first tab is pressed, creates a new MainFeed() fragment object
                 case 1:
-                    return new SearchFeed();
+                    return new SearchFeed(); //if the second tab is pressed, creates a new SearchFeed() fragment object
                 case 2:
-                    return new UserProfile();
+                    return new UserProfile(); //if the third tab is pressed, creates a new UserProfile() fragment object
                 case 3:
-                    return new MyCamera();
+                    return new MyCamera(); //if the fourth tab is pressed, creates a new Camera() fragment object
                 default:
                     return null;
             }

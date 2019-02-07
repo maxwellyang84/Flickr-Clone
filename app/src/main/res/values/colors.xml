@@ -5,4 +5,5 @@
     <color name="colorAccent">#009688</color>
     <color name="tabSelectedIconColor">#FFF</color>
     <color name="tabUnselectedIconColor">#808080</color>
+    <color name="backgroundToolbarColor">#333</color>
 </resources>

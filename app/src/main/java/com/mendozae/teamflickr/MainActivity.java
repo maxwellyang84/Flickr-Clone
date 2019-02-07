@@ -95,17 +95,22 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /*
+    activates when the MainActivity class starts
+     */
     @Override
     public void onStart() {
 
         super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser !=null){
+        FirebaseUser currentUser = mAuth.getCurrentUser(); //gets current user if any
+        if(currentUser !=null){//checks if there is a current user
 
-            updateUI();
+            updateUI(); //calls method to send Activity to the UserInterface Activity
         }
     }
-
+/*
+sends the UI to UserInterface class
+ */
     private void updateUI(){
         Intent intent = new Intent(getApplicationContext(), UserInterface.class);
         startActivity(intent);

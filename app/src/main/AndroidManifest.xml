@@ -26,7 +26,8 @@
             android:label="@string/title_activity_main_feed"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Followers" />
-        <activity android:name=".Following"></activity>
+        <activity android:name=".Following" />
+        <activity android:name=".AboutEditActivity"></activity>
     </application>
 
 </manifest>
