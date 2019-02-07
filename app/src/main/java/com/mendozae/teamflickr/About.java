@@ -15,15 +15,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link About.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link About#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class About extends Fragment {
 
     String[] title = {"Description", "Occupation", "Current city", "Hometown", "Website", "Tumblr", "Facebook", "Twitter", "Instagram",
