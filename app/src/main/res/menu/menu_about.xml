@@ -5,11 +5,9 @@
     tools:context=".AboutEditActivity">
 
     <item
-        android:id="@+id/edit"
-        android:orderInCategory="200"
-        android:title="Edit"
-        android:icon="@drawable/rectangle"
-        app:showAsAction="ifRoom"
+        android:id="@+id/logout"
+        android:orderInCategory="100"
+        android:title="Log Out"
         />
 
 

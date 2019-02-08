@@ -3,8 +3,9 @@
     package="com.mendozae.teamflickr">
 
     <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-feature android:name="android.hardware.Camera"/>
-    <uses-feature android:name="android.hardware.Camera.autofocus"/>
+    <uses-feature android:name="android.hardware.camera"/>
+    <uses-feature android:name="android.hardware.camera.autofocus"/>
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -27,7 +28,8 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Followers" />
         <activity android:name=".Following" />
-        <activity android:name=".AboutEditActivity"></activity>
+        <activity android:name=".AboutEditActivity" />
+        <activity android:name=".OtherUsersProfile"></activity>
     </application>
 
 </manifest>
