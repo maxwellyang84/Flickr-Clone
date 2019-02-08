@@ -1,5 +1,6 @@
 package com.mendozae.teamflickr;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -19,10 +20,13 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.mendozae.teamflickr.UserProfile.userReference;
 import static java.security.AccessController.getContext;
@@ -38,6 +42,7 @@ public class Following extends AppCompatActivity {
     ArrayList<String> followingNames;
     Button followButton;
     ArrayList<String> followedOrNot;
+    private FirebaseFirestore mStore;
 
 
     @Override
@@ -50,6 +55,7 @@ public class Following extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setBackgroundColor(Color.parseColor("#333333"));
 
+        mStore = FirebaseFirestore.getInstance();
 
         userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -58,9 +64,19 @@ public class Following extends AppCompatActivity {
                     DocumentSnapshot snapshot = task.getResult();
                     if(snapshot.exists()){
                         followingNames = (ArrayList<String>) snapshot.get("Following");
+                        followedOrNot = (ArrayList<String>) snapshot.get("FollowingOrNotFollowing");
                         listView = (ListView) findViewById(R.id.followinglistview);
                         adapter = new CustomAdapter();
                         listView.setAdapter(adapter);
+                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                String name = followingNames.get(i);
+                                Intent intent = new Intent(Following.this, OtherUsersProfile.class);
+                                intent.putExtra("Name", name);
+                                startActivity(intent);
+                            }
+                        });
 
 
 
@@ -89,6 +105,7 @@ public class Following extends AppCompatActivity {
                     DocumentSnapshot snapshot = task.getResult();
                     if(snapshot.exists()){
                         followingNames = (ArrayList<String>) snapshot.get("Following");
+                        followedOrNot = (ArrayList<String>) snapshot.get("FollowingOrNotFollowing");
                         adapter.notifyDataSetChanged();
                         swipeRefresh.setRefreshing(false);
                     }
@@ -104,17 +121,96 @@ public class Following extends AppCompatActivity {
     }
 
     private void follow(String name){
+        final DocumentReference docRef = mStore.collection("Users").document(name);
         userReference.update("Following", FieldValue.arrayUnion(name));
+        userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot snapshot = task.getResult();
+                    if(snapshot.exists()){
+                        ArrayList<String> followingOrNotFollowingTemp = (ArrayList<String>) snapshot.get("FollowingOrNotFollowing");
+                        followingOrNotFollowingTemp.add("Followed");
+                        userReference.update("FollowingOrNotFollowing", followingOrNotFollowingTemp);
+                    }
+                }
+            }
+        });
+
+
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot snapshot = task.getResult();
+                    if(snapshot.exists()){
+                        ArrayList<String> otherUsersFollowers = (ArrayList<String>) snapshot.get("Followers");
+                        ArrayList<String> otherUsersFollowingOrNotTemp = (ArrayList<String>) snapshot.get("FollowingOrNotFollowers");
+                        ArrayList<String> otherUsersFollowing = (ArrayList<String>) snapshot.get("Following");
+
+                        otherUsersFollowers.add(UserProfile.user);
+
+                        if(otherUsersFollowing.contains(UserProfile.user)){
+                            otherUsersFollowingOrNotTemp.add("Followed");
+                        }else{
+                            otherUsersFollowingOrNotTemp.add("+  Follow");
+                        }
+
+                        docRef.update("Followers", otherUsersFollowers);
+                        docRef.update("FollowingOrNotFollowers", otherUsersFollowingOrNotTemp);
+
+                    }
+                }
+            }
+        });
+
+
     }
 
-    private void unfollow(String name){
-        userReference.update("Following", FieldValue.arrayRemove(name));
+    private void unfollow(final String name){
+        final DocumentReference docRef = mStore.collection("Users").document(name);
+        userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot snapshot = task.getResult();
+                    if(snapshot.exists()){
+                        ArrayList<String> followingOrNotTemp = (ArrayList<String>) snapshot.get("FollowingOrNotFollowing");
+                        followingOrNotTemp.remove(followingNames.indexOf(name));
+                        userReference.update("FollowingOrNotFollowing", followingOrNotTemp);
+                        userReference.update("Following", FieldValue.arrayRemove(name));
+                    }
+                }
+            }
+        });
+
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot snapshot = task.getResult();
+                    if(snapshot.exists()){
+                        ArrayList<String> otherUsersFollowers = (ArrayList<String>) snapshot.get("Followers");
+                        ArrayList<String> otherUsersFollowingOrNotTemp = (ArrayList<String>) snapshot.get("FollowingOrNotFollowers");
+
+                        int index = otherUsersFollowers.indexOf(UserProfile.user);
+
+                        otherUsersFollowers.remove(index);
+                        otherUsersFollowingOrNotTemp.remove(index);
+
+                        docRef.update("Followers", otherUsersFollowers);
+                        docRef.update("FollowingOrNotFollowers", otherUsersFollowingOrNotTemp);
+
+                    }
+                }
+            }
+        });
     }
 
 
 
 
-    private class CustomAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
+    private class CustomAdapter extends BaseAdapter{
 
         @Override
         public int getCount() {
@@ -134,36 +230,44 @@ public class Following extends AppCompatActivity {
         @Override
         public View getView(final int i, View view, final ViewGroup viewGroup) {
             final int index = i;
+            final ViewHolder viewHolder;
             if(view == null) {
-                //view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.layout_custom, viewGroup, false);
                 view = getLayoutInflater().inflate(R.layout.layout_custom, null);
+                viewHolder = new ViewHolder();
+                viewHolder.followButton = (Button) view.findViewById(R.id.followbutton);
+                view.setTag(viewHolder);
+            }else{
+                viewHolder = (ViewHolder) view.getTag();
             }
             ImageView imageView = (ImageView) view.findViewById(R.id.pfp);
             TextView textView_name = (TextView) view.findViewById(R.id.name);
             TextView textView_desc = (TextView) view.findViewById(R.id.desc);
+            viewHolder.followButton.setText(followedOrNot.get(index));
+            textView_name.setText(followingNames.get(index));
 
-//            view.findViewById(R.id.followbutton).setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    Log.i("Hello", "Please");
-//                    ((ListView) viewGroup).performItemClick(view, i, 0);
-//                }
-//            });
+            viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(viewHolder.followButton.getText().toString().equals("Followed")){
+                        viewHolder.followButton.setText("+  Follow");
+                        unfollow(followingNames.get(index));
+
+                    }else{
+                        viewHolder.followButton.setText("Followed");
+                        follow(followingNames.get(index));
+                    }
+                }
+            });
+
 
             //imageView.setImageResource(IMAGES[i]);
-            textView_name.setText(followingNames.get(index));
+
            // textView_desc.setText(DESCRIPTIONS[i]);
             return view;
         }
 
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            Log.i("fj;eafeaw",";ajf;aklwefjaw");
-            long viewId = view.getId();
-            if(viewId == R.id.followbutton){
-                Log.i("YES", "PLEASE");
-
-            }
+        private class ViewHolder{
+            Button followButton;
         }
 
 

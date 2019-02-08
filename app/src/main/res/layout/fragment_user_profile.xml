@@ -39,6 +39,7 @@
                 android:layout_centerInParent="true"
                 android:gravity="center_horizontal"
                 android:text="Maxwell Yang"
+                android:textColor="@color/common_google_signin_btn_text_dark_focused"
                 android:textSize="24sp" />
 
             <LinearLayout

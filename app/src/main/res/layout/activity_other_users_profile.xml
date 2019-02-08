@@ -7,13 +7,24 @@
     tools:context=".OtherUsersProfile">
 
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/backtoolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimaryDark"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ToolBarStyle"
+        app:title="Profile" />
+
     <android.support.v7.widget.CardView
         android:id="@+id/cardview"
         android:layout_width="match_parent"
         android:layout_height="192dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:background="@drawable/backbutton">
+        android:background="@drawable/backbutton"
+        android:layout_below="@id/backtoolbar"
+        android:layout_marginTop="?attr/actionBarSize">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -29,7 +40,7 @@
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/followbutton"
                 android:text="+  Follow"
-                android:onClick="clicked"/>
+                />
                 <!--layout height and width should be set to 35dp when it changes to a checkmark, otherwise width wrap content and height 30dp-->
 
 
@@ -39,6 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:gravity="center_horizontal"
+                android:textColor="@color/common_google_signin_btn_text_dark_focused"
                 android:textSize="24sp" />
 
             <LinearLayout
