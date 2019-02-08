@@ -56,6 +56,8 @@ public class UserInterface extends AppCompatActivity {
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main_feed);
 
+
+
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout); //initializes the tablayout object
         for(int i = 0; i <=3; i++) {
             tabLayout.addTab(tabLayout.newTab()); //adds four tabs to the tablayout
@@ -82,7 +84,9 @@ public class UserInterface extends AppCompatActivity {
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager); //declares viewPager
         final PageAdapter adapter = new PageAdapter(getSupportFragmentManager(), tabLayout.getTabCount()); //sets the adapter with the
         //support FragmentManager, and the number of tabs
+        viewPager.setOffscreenPageLimit(2);
         viewPager.setAdapter(adapter);
+
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){ //a listener for when tabs are selected
 
