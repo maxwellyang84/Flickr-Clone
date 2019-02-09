@@ -133,11 +133,14 @@ public class MainActivity extends AppCompatActivity {
         userInfo.put("Password", userPassword);
         userInfo.put("Name", userName);
         ddb.collection("Users").document(userName).set(userInfo);
+        Map<String, Map<String,String>> userInfo2 = new HashMap<>();
+        userInfo2.put("Followers", new HashMap<String,String>());
+        userInfo2.put("Following", new HashMap<String, String>());
+        ddb.collection("Users").document(userName).set(userInfo2, SetOptions.merge());
 
         userInfo3.put("AboutKeys", title);
         userInfo3.put("AboutValues", description);
-        userInfo3.put("Followers", new ArrayList<String>());
-        userInfo3.put("Following", new ArrayList<String>());
+
         userInfo3.put("Comments Posted", new ArrayList<String>());
         userInfo3.put("Previous Searches", new ArrayList<String>());
         ddb.collection("Users").document(userName).set(userInfo3, SetOptions.merge());

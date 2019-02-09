@@ -31,8 +31,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import org.w3c.dom.Document;
 
 import java.util.ArrayList;
-
-
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 /**
@@ -84,8 +84,8 @@ public class UserProfile extends Fragment {
                     if(snapshot.exists()){
                         followers = (TextView) getView().findViewById(R.id.followers);
                         following = (TextView) getView().findViewById(R.id.following);
-                        Integer followersSize = ((ArrayList<String>)snapshot.get("Followers")).size();
-                        Integer followingSize = ((ArrayList<String>) snapshot.get("Following")).size();
+                        Integer followersSize = ((LinkedHashMap<String,String>) snapshot.get("Followers")).size();
+                        Integer followingSize = ((LinkedHashMap<String,String>) snapshot.get("Following")).size();
                         followers.setText(followersSize.toString() + " Followers");
                         following.setText(followingSize.toString() + " Following");
                     }

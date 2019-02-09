@@ -1,5 +1,6 @@
 package com.mendozae.teamflickr;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -10,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,9 +23,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static com.mendozae.teamflickr.UserProfile.userReference;
-import static java.security.AccessController.getContext;
 
 public class Following extends AppCompatActivity {
 
@@ -35,9 +37,10 @@ public class Following extends AppCompatActivity {
     SwipeRefreshLayout swipeRefresh;
     CustomAdapter adapter;
     ListView listView;
+    Map<String,String> following;
     ArrayList<String> followingNames;
-    Button followButton;
-    ArrayList<String> followedOrNot;
+
+
 
 
     @Override
@@ -57,10 +60,11 @@ public class Following extends AppCompatActivity {
                 if(task.isSuccessful()){
                     DocumentSnapshot snapshot = task.getResult();
                     if(snapshot.exists()){
-                        followingNames = (ArrayList<String>) snapshot.get("Following");
+                        following = (LinkedHashMap<String,String>) snapshot.get("Following");
                         listView = (ListView) findViewById(R.id.followinglistview);
                         adapter = new CustomAdapter();
                         listView.setAdapter(adapter);
+                        followingNames = (ArrayList<String>) following.keySet();
 
 
 
@@ -88,7 +92,7 @@ public class Following extends AppCompatActivity {
                 if(task.isSuccessful()){
                     DocumentSnapshot snapshot = task.getResult();
                     if(snapshot.exists()){
-                        followingNames = (ArrayList<String>) snapshot.get("Following");
+                        following = (LinkedHashMap<String,String>) snapshot.get("Following");
                         adapter.notifyDataSetChanged();
                         swipeRefresh.setRefreshing(false);
                     }
@@ -104,21 +108,24 @@ public class Following extends AppCompatActivity {
     }
 
     private void follow(String name){
-        userReference.update("Following", FieldValue.arrayUnion(name));
+       userReference.update(name, "Followed");
     }
 
     private void unfollow(String name){
         userReference.update("Following", FieldValue.arrayRemove(name));
+        Map<String, Object> deleteMap =new HashMap<>();
+        deleteMap.put("Following." + name, FieldValue.delete());
+        userReference.update(deleteMap);
     }
 
 
 
 
-    private class CustomAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
+    private class CustomAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
-            return followingNames.size();
+            return following.size();
         }
 
         @Override
@@ -134,37 +141,48 @@ public class Following extends AppCompatActivity {
         @Override
         public View getView(final int i, View view, final ViewGroup viewGroup) {
             final int index = i;
+            final ViewHolder viewHolder;
             if(view == null) {
                 //view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.layout_custom, viewGroup, false);
-                view = getLayoutInflater().inflate(R.layout.layout_custom, null);
+                LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+               view = getLayoutInflater().inflate(R.layout.layout_custom, null);
+               viewHolder = new ViewHolder();
+               view.setTag(viewHolder);
+               viewHolder.followingButton = (Button) view.findViewById(R.id.followbutton);
+            }else{
+                viewHolder = (ViewHolder) view.getTag();
             }
+
             ImageView imageView = (ImageView) view.findViewById(R.id.pfp);
             TextView textView_name = (TextView) view.findViewById(R.id.name);
             TextView textView_desc = (TextView) view.findViewById(R.id.desc);
+            viewHolder.followingButton.setText(following.get(followingNames.get(i)));
 
-//            view.findViewById(R.id.followbutton).setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    Log.i("Hello", "Please");
-//                    ((ListView) viewGroup).performItemClick(view, i, 0);
-//                }
-//            });
+           viewHolder.followingButton.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View v) {
+                    if(viewHolder.followingButton.getText().toString().equals("Followed")){
+                        viewHolder.followingButton.setText("+  Follow");
+                        unfollow(following.get(i));
+                    }else{
+                        viewHolder.followingButton.setText("Followed");
+                        follow(following.get(i));
+                    }
+               }
+           });
+
+
 
             //imageView.setImageResource(IMAGES[i]);
-            textView_name.setText(followingNames.get(index));
+            textView_name.setText(following.get(index));
            // textView_desc.setText(DESCRIPTIONS[i]);
             return view;
         }
 
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            Log.i("fj;eafeaw",";ajf;aklwefjaw");
-            long viewId = view.getId();
-            if(viewId == R.id.followbutton){
-                Log.i("YES", "PLEASE");
-
-            }
+        private class ViewHolder{
+            private Button followingButton;
         }
+
 
 
 
