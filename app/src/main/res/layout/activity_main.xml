@@ -45,7 +45,7 @@
         app:srcCompat="@drawable/flickrlogo" />
 
     <EditText
-        android:id="@+id/username"
+        android:id="@+id/userName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"

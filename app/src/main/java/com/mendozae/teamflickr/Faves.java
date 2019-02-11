@@ -17,13 +17,13 @@ import android.view.ViewGroup;
  * Use the {@link Albums#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Albums extends Fragment {
+public class Faves extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_albums, container, false);
+        return inflater.inflate(R.layout.fragment_faves, container, false);
     }
 
 }
