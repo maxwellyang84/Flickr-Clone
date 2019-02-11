@@ -29,7 +29,9 @@
         <activity android:name=".Followers" />
         <activity android:name=".Following" />
         <activity android:name=".AboutEditActivity" />
-        <activity android:name=".OtherUsersProfile"></activity>
+        <activity android:name=".OtherUsersProfile" />
+        <activity android:name=".OtherFollowers" />
+        <activity android:name=".OtherFollowing"></activity>
     </application>
 
 </manifest>

@@ -1,6 +1,6 @@
 package com.mendozae.teamflickr;
 
-import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,15 +20,16 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static com.mendozae.teamflickr.UserProfile.userReference;
+import static java.security.AccessController.getContext;
 
 public class Following extends AppCompatActivity {
 
@@ -37,10 +39,10 @@ public class Following extends AppCompatActivity {
     SwipeRefreshLayout swipeRefresh;
     CustomAdapter adapter;
     ListView listView;
-    Map<String,String> following;
     ArrayList<String> followingNames;
-
-
+    Button followButton;
+    ArrayList<String> followedOrNot;
+    private FirebaseFirestore mStore;
 
 
     @Override
@@ -53,6 +55,7 @@ public class Following extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setBackgroundColor(Color.parseColor("#333333"));
 
+        mStore = FirebaseFirestore.getInstance();
 
         userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -60,11 +63,20 @@ public class Following extends AppCompatActivity {
                 if(task.isSuccessful()){
                     DocumentSnapshot snapshot = task.getResult();
                     if(snapshot.exists()){
-                        following = (LinkedHashMap<String,String>) snapshot.get("Following");
+                        followingNames = (ArrayList<String>) snapshot.get("Following");
+                        followedOrNot = (ArrayList<String>) snapshot.get("FollowingOrNotFollowing");
                         listView = (ListView) findViewById(R.id.followinglistview);
                         adapter = new CustomAdapter();
                         listView.setAdapter(adapter);
-                        followingNames = (ArrayList<String>) following.keySet();
+                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                String name = followingNames.get(i);
+                                Intent intent = new Intent(Following.this, OtherUsersProfile.class);
+                                intent.putExtra("Name", name);
+                                startActivity(intent);
+                            }
+                        });
 
 
 
@@ -92,7 +104,8 @@ public class Following extends AppCompatActivity {
                 if(task.isSuccessful()){
                     DocumentSnapshot snapshot = task.getResult();
                     if(snapshot.exists()){
-                        following = (LinkedHashMap<String,String>) snapshot.get("Following");
+                        followingNames = (ArrayList<String>) snapshot.get("Following");
+                        followedOrNot = (ArrayList<String>) snapshot.get("FollowingOrNotFollowing");
                         adapter.notifyDataSetChanged();
                         swipeRefresh.setRefreshing(false);
                     }
@@ -108,24 +121,100 @@ public class Following extends AppCompatActivity {
     }
 
     private void follow(String name){
-       userReference.update(name, "Followed");
+        final DocumentReference docRef = mStore.collection("Users").document(name);
+        userReference.update("Following", FieldValue.arrayUnion(name));
+        userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot snapshot = task.getResult();
+                    if(snapshot.exists()){
+                        ArrayList<String> followingOrNotFollowingTemp = (ArrayList<String>) snapshot.get("FollowingOrNotFollowing");
+                        followingOrNotFollowingTemp.add("Followed");
+                        userReference.update("FollowingOrNotFollowing", followingOrNotFollowingTemp);
+                    }
+                }
+            }
+        });
+
+
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot snapshot = task.getResult();
+                    if(snapshot.exists()){
+                        ArrayList<String> otherUsersFollowers = (ArrayList<String>) snapshot.get("Followers");
+                        ArrayList<String> otherUsersFollowingOrNotTemp = (ArrayList<String>) snapshot.get("FollowingOrNotFollowers");
+                        ArrayList<String> otherUsersFollowing = (ArrayList<String>) snapshot.get("Following");
+
+                        otherUsersFollowers.add(UserProfile.user);
+
+                        if(otherUsersFollowing.contains(UserProfile.user)){
+                            otherUsersFollowingOrNotTemp.add("Followed");
+                        }else{
+                            otherUsersFollowingOrNotTemp.add("+  Follow");
+                        }
+
+                        docRef.update("Followers", otherUsersFollowers);
+                        docRef.update("FollowingOrNotFollowers", otherUsersFollowingOrNotTemp);
+
+                    }
+                }
+            }
+        });
+
+
     }
 
-    private void unfollow(String name){
-        userReference.update("Following", FieldValue.arrayRemove(name));
-        Map<String, Object> deleteMap =new HashMap<>();
-        deleteMap.put("Following." + name, FieldValue.delete());
-        userReference.update(deleteMap);
+    private void unfollow(final String name){
+        final DocumentReference docRef = mStore.collection("Users").document(name);
+        userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot snapshot = task.getResult();
+                    if(snapshot.exists()){
+                        ArrayList<String> followingOrNotTemp = (ArrayList<String>) snapshot.get("FollowingOrNotFollowing");
+                        followingOrNotTemp.remove(followingNames.indexOf(name));
+                        userReference.update("FollowingOrNotFollowing", followingOrNotTemp);
+                        userReference.update("Following", FieldValue.arrayRemove(name));
+                    }
+                }
+            }
+        });
+
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot snapshot = task.getResult();
+                    if(snapshot.exists()){
+                        ArrayList<String> otherUsersFollowers = (ArrayList<String>) snapshot.get("Followers");
+                        ArrayList<String> otherUsersFollowingOrNotTemp = (ArrayList<String>) snapshot.get("FollowingOrNotFollowers");
+
+                        int index = otherUsersFollowers.indexOf(UserProfile.user);
+
+                        otherUsersFollowers.remove(index);
+                        otherUsersFollowingOrNotTemp.remove(index);
+
+                        docRef.update("Followers", otherUsersFollowers);
+                        docRef.update("FollowingOrNotFollowers", otherUsersFollowingOrNotTemp);
+
+                    }
+                }
+            }
+        });
     }
 
 
 
 
-    private class CustomAdapter extends BaseAdapter {
+    private class CustomAdapter extends BaseAdapter{
 
         @Override
         public int getCount() {
-            return following.size();
+            return followingNames.size();
         }
 
         @Override
@@ -143,46 +232,43 @@ public class Following extends AppCompatActivity {
             final int index = i;
             final ViewHolder viewHolder;
             if(view == null) {
-                //view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.layout_custom, viewGroup, false);
-                LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-               view = getLayoutInflater().inflate(R.layout.layout_custom, null);
-               viewHolder = new ViewHolder();
-               view.setTag(viewHolder);
-               viewHolder.followingButton = (Button) view.findViewById(R.id.followbutton);
+                view = getLayoutInflater().inflate(R.layout.layout_custom, null);
+                viewHolder = new ViewHolder();
+                viewHolder.followButton = (Button) view.findViewById(R.id.followbutton);
+                view.setTag(viewHolder);
             }else{
                 viewHolder = (ViewHolder) view.getTag();
             }
-
             ImageView imageView = (ImageView) view.findViewById(R.id.pfp);
             TextView textView_name = (TextView) view.findViewById(R.id.name);
             TextView textView_desc = (TextView) view.findViewById(R.id.desc);
-            viewHolder.followingButton.setText(following.get(followingNames.get(i)));
+            viewHolder.followButton.setText(followedOrNot.get(index));
+            textView_name.setText(followingNames.get(index));
 
-           viewHolder.followingButton.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View v) {
-                    if(viewHolder.followingButton.getText().toString().equals("Followed")){
-                        viewHolder.followingButton.setText("+  Follow");
-                        unfollow(following.get(i));
+            viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(viewHolder.followButton.getText().toString().equals("Followed")){
+                        viewHolder.followButton.setText("+  Follow");
+                        unfollow(followingNames.get(index));
+
                     }else{
-                        viewHolder.followingButton.setText("Followed");
-                        follow(following.get(i));
+                        viewHolder.followButton.setText("Followed");
+                        follow(followingNames.get(index));
                     }
-               }
-           });
-
+                }
+            });
 
 
             //imageView.setImageResource(IMAGES[i]);
-            textView_name.setText(following.get(index));
+
            // textView_desc.setText(DESCRIPTIONS[i]);
             return view;
         }
 
         private class ViewHolder{
-            private Button followingButton;
+            Button followButton;
         }
-
 
 
 

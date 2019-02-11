@@ -30,6 +30,7 @@ import com.google.firebase.firestore.SetOptions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -127,23 +128,22 @@ public class MainActivity extends AppCompatActivity {
                 "Add Website...", "Add Tumblr...", "Add Facebook...", "Add Twitter...", "Add Instagram...", "Add Pinterest...",
                 "Add Email address...");
 
-        Map<String, List<String>> userInfo3 = new HashMap<>();
+        Map<String, List<String>> userInfo2 = new HashMap<>();
 
         userInfo.put("Email", userEmail);
         userInfo.put("Password", userPassword);
         userInfo.put("Name", userName);
         ddb.collection("Users").document(userName).set(userInfo);
-        Map<String, Map<String,String>> userInfo2 = new HashMap<>();
-        userInfo2.put("Followers", new HashMap<String,String>());
-        userInfo2.put("Following", new HashMap<String, String>());
+
+        userInfo2.put("Followers", new ArrayList<String>());
+        userInfo2.put("Following", new ArrayList<String>());
+        userInfo2.put("FollowingOrNotFollowing", new ArrayList<String>());
+        userInfo2.put("FollowingOrNotFollowers", new ArrayList<String>());
+        userInfo2.put("AboutKeys", title);
+        userInfo2.put("AboutValues", description);
+        userInfo2.put("Comments Posted", new ArrayList<String>());
+        userInfo2.put("Previous Searches", new ArrayList<String>());
         ddb.collection("Users").document(userName).set(userInfo2, SetOptions.merge());
-
-        userInfo3.put("AboutKeys", title);
-        userInfo3.put("AboutValues", description);
-
-        userInfo3.put("Comments Posted", new ArrayList<String>());
-        userInfo3.put("Previous Searches", new ArrayList<String>());
-        ddb.collection("Users").document(userName).set(userInfo3, SetOptions.merge());
     }
 
 

@@ -41,12 +41,19 @@ public class UserInterface extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
 
-
+    public static ViewPager viewPager;
+    public static TabLayout tabLayout;
+    public static int currentTab;
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    private ViewPager mViewPager;
 
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        viewPager.setCurrentItem(currentTab);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,9 +63,10 @@ public class UserInterface extends AppCompatActivity {
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main_feed);
 
+        currentTab = 0;
 
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout); //initializes the tablayout object
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout); //initializes the tablayout object
         for(int i = 0; i <=3; i++) {
             tabLayout.addTab(tabLayout.newTab()); //adds four tabs to the tablayout
         }
@@ -81,7 +89,7 @@ public class UserInterface extends AppCompatActivity {
         }
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager); //declares viewPager
+         viewPager = (ViewPager) findViewById(R.id.pager); //declares viewPager
         final PageAdapter adapter = new PageAdapter(getSupportFragmentManager(), tabLayout.getTabCount()); //sets the adapter with the
         //support FragmentManager, and the number of tabs
         viewPager.setOffscreenPageLimit(2);
@@ -92,7 +100,8 @@ public class UserInterface extends AppCompatActivity {
 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition()); //when a tab is selected the viewPager moves to that tab location
+                viewPager.setCurrentItem(tab.getPosition());
+                currentTab= tab.getPosition();//when a tab is selected the viewPager moves to that tab location
                 int tabIconColor = ContextCompat.getColor(UserInterface.this, R.color.tabSelectedIconColor); //changes color of tab to highlighted
                 (tab.getIcon()).setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
             }
