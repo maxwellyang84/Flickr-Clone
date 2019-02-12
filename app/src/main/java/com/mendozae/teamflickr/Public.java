@@ -1,21 +1,30 @@
 package com.mendozae.teamflickr;
 
-import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -30,7 +39,9 @@ public class Public extends Fragment {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private ArrayList<Integer> myDataset;
+    private ArrayList<String> URLs;
+    private FirebaseFirestore mStore;
+    private CollectionReference photoRef;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,49 +54,73 @@ public class Public extends Fragment {
     public void onStart(){
         super.onStart();
         mRecyclerView = (RecyclerView) getView().findViewById(R.id.recyclerview);
-        myDataset = new ArrayList<Integer>();
-        myDataset.add(R.drawable.flickr);
-        myDataset.add(R.drawable.flickrlogo);
-        myDataset.add(R.drawable.backbutton);
-        myDataset.add(R.drawable.dots);
 
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        mRecyclerView.setHasFixedSize(true);
+        URLs = new ArrayList<String>();
 
-        // use a linear layout manager
-        mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        mStore = FirebaseFirestore.getInstance();
+        photoRef = mStore.collection("Photos");
+        Query query = photoRef.whereEqualTo("User", UserProfile.currentUser );
+        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for(QueryDocumentSnapshot snapshot: queryDocumentSnapshots){
+                    URLs.add((String) snapshot.get("URI"));
+                }
+                // use this setting to improve performance if you know that changes
+                // in content do not change the layout size of the RecyclerView
+                mRecyclerView.setHasFixedSize(true);
 
-        // specify an adapter (see also next example)
-        mAdapter = new MyAdapter(myDataset);
-        mRecyclerView.setAdapter(mAdapter);
+                // use a linear layout manager
+                mLayoutManager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
+                mRecyclerView.setLayoutManager(mLayoutManager);
+
+                // specify an adapter (see also next example)
+                mAdapter = new MyAdapter(URLs);
+                mRecyclerView.setAdapter(mAdapter);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("info", "it failed");
+            }
+        });
+
+
     }
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.myViewHolder>{
-        ArrayList<Integer> images;
+        List<String> imageURLs;
 
-        public MyAdapter(ArrayList<Integer> images){
-            this.images = images;
+        public MyAdapter(List<String> imageURLs){
+            this.imageURLs = imageURLs;
         }
         @NonNull
         @Override
         public MyAdapter.myViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-            View view= LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_custom_photos, viewGroup, false);
+            View view= LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_custom_photos2, viewGroup, false);
             myViewHolder vh = new myViewHolder(view);
             return vh;
         }
 
         @Override
-        public void onBindViewHolder(@NonNull MyAdapter.myViewHolder myViewHolder, int i) {
+        public void onBindViewHolder(@NonNull MyAdapter.myViewHolder myViewHolder, final int i) {
 
-                myViewHolder.image.setImageResource(images.get(i));
+            myViewHolder.image.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getContext(), FullscreenImage.class);
+                    intent.putExtra("Image", imageURLs.get(i));
+                    startActivity(intent);
+                }
+            });
+           Glide.with(getContext()).load(imageURLs.get(i)).into(myViewHolder.image);
+//                myViewHolder.image.setImageResource(images.get(i));
 
         }
 
         @Override
         public int getItemCount() {
-            return images.size();
+            return imageURLs.size();
         }
 
         public class myViewHolder extends RecyclerView.ViewHolder{
@@ -103,5 +138,7 @@ public class Public extends Fragment {
 
             }
         }
+
+
     }
 }

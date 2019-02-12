@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -32,8 +33,13 @@ public class FullscreenImage extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen_image);
+
+        Intent intent = getIntent();
+        String URL = intent.getStringExtra("Image");
+
+
         image = (ImageView) findViewById(R.id.imageView);
-        image.setImageResource(R.drawable.elephant);
+        Glide.with(FullscreenImage.this).load(URL).into(image);
 
         exitButton = (Button) findViewById(R.id.exitbutton);
         likeButton = (Button) findViewById(R.id.likebutton);
