@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/userHolder"
         android:layout_width="185dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
