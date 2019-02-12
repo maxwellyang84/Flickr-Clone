@@ -8,7 +8,7 @@
     >
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/infotoolbar"
+        android:id="@+id/followingtoolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimaryDark"
@@ -20,7 +20,7 @@
         android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/infotoolbar">
+        android:layout_below="@id/followingtoolbar">
         <ListView
             android:id="@+id/followinglistview"
             android:layout_width="match_parent"
