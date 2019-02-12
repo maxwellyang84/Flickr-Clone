@@ -46,7 +46,7 @@ public class UserInterface extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
-    public static TabLayout tabLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +56,9 @@ public class UserInterface extends AppCompatActivity {
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main_feed);
 
-        tabLayout = (TabLayout) findViewById(R.id.tab_layout); //initializes the tablayout object
+
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout); //initializes the tablayout object
         for(int i = 0; i <=3; i++) {
             tabLayout.addTab(tabLayout.newTab()); //adds four tabs to the tablayout
         }
