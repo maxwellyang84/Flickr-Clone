@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
@@ -65,11 +66,7 @@ public class SearchableActivity extends AppCompatActivity {
         mStore = FirebaseFirestore.getInstance();
         photoRef = mStore.collection("Photos");
         images = new ArrayList<>();
-        images.add("1");
-        images.add("2");
-        images.add("3");
-        images.add("4");
-        images.add("5");
+
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
@@ -77,7 +74,7 @@ public class SearchableActivity extends AppCompatActivity {
 
         mAdapter = new MyAdapter(images);
 
-        mRecyclerView.setAdapter(mAdapter);
+
 
         Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
@@ -92,15 +89,20 @@ public class SearchableActivity extends AppCompatActivity {
 
     private void doMySearch(List<String> query){
         for(int i = 0; i < query.size(); i++) {
-           Query mainQuery = photoRef.whereArrayContains("Tag", query.get(i));
+           Query mainQuery = photoRef.whereArrayContains("Tags", query.get(i));
            mainQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                @Override
                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                   Log.i("I am here", "1");
                     for(QueryDocumentSnapshot s: queryDocumentSnapshots){
-                        String url = (String) s.get("Url");
-                        if(images.contains(url))
-                        images.add(url);
+                        String url = (String) s.get("URI");
+                        Log.i("I am here", "2");
+                        if(!images.contains(url)) {
+                            images.add(url);
+                            Log.i("I am here", "3");
+                        }
                     }
+                   mRecyclerView.setAdapter(mAdapter);
                }
            });
         }
@@ -164,7 +166,7 @@ public class SearchableActivity extends AppCompatActivity {
 
         // Replace the contents of a view (invoked by the layout manager)
         @Override
-        public void onBindViewHolder(MyViewHolder holder, int position) {
+        public void onBindViewHolder(MyViewHolder holder, final int position) {
             // - get element from your dataset at this position
             // - replace the contents of the view with that element
             Log.i("sup", String.valueOf(position));
@@ -172,25 +174,18 @@ public class SearchableActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(SearchableActivity.this, FullscreenImage.class);
-                    intent.putExtra("image", R.drawable.elephant);
+                    intent.putExtra("Image", images.get(position));
                     startActivity(intent);
                 }
             });
-            if(position == 3) {
-                holder.mImageView.setImageResource(R.drawable.backbutton);
-            }else if(position==4){
-
-                holder.mImageView.setImageResource(R.drawable.cambutton);
-            }else{
-                holder.mImageView.setImageResource(R.drawable.elephant);
-            }
-
-
+            Log.i("feawfae", String.valueOf(images.size()));
+            Glide.with(SearchableActivity.this).load(images.get(position)).into(holder.mImageView);
         }
 
         // Return the size of your dataset (invoked by the layout manager)
         @Override
         public int getItemCount() {
+            Log.i("feawfae", String.valueOf(images.size()));
             return images.size();
         }
     }

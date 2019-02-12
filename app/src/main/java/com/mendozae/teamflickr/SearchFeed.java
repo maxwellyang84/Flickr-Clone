@@ -66,6 +66,7 @@ public class SearchFeed extends Fragment implements SearchView.OnQueryTextListen
         searchView = (SearchView) getView().findViewById(R.id.searchview);
         searchView.setIconifiedByDefault(false);
         searchView.setSubmitButtonEnabled(true);
+        searchView.setBackgroundColor(Color.parseColor("#373738"));
 
         searchView.setSearchableInfo( searchManager.getSearchableInfo(new
                 ComponentName(getContext(),SearchableActivity.class)));
@@ -82,11 +83,6 @@ public class SearchFeed extends Fragment implements SearchView.OnQueryTextListen
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
         images = new ArrayList<>();
-        images.add("1");
-        images.add("2");
-        images.add("3");
-        images.add("4");
-        images.add("5");
         mAdapter = new MyAdapter(images);
 
         mRecyclerView.setAdapter(mAdapter);
@@ -104,6 +100,7 @@ public class SearchFeed extends Fragment implements SearchView.OnQueryTextListen
     public boolean onQueryTextChange(String s) {
         return false;
     }
+
 
     public void setupUI(View view) {
 
@@ -183,15 +180,6 @@ public class SearchFeed extends Fragment implements SearchView.OnQueryTextListen
                 }
             });
 
-            Log.i("sup", String.valueOf(position));
-            if(position == 3) {
-                holder.mImageView.setImageResource(R.drawable.backbutton);
-            }else if(position==4){
-
-                holder.mImageView.setImageResource(R.drawable.cambutton);
-            }else{
-                holder.mImageView.setImageResource(R.drawable.elephant);
-            }
 
 
         }

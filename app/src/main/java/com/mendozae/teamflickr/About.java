@@ -1,9 +1,6 @@
 package com.mendozae.teamflickr;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,10 +17,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
@@ -137,7 +131,7 @@ public class About extends Fragment {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             view = getLayoutInflater().inflate(R.layout.layout_custom_about, null);
-            titles = (TextView) view.findViewById(R.id.title);
+            titles = (TextView) view.findViewById(R.id.userHolder);
             descriptions = (TextView) view.findViewById(R.id.description);
             images = (ImageView)view.findViewById(R.id.arrow);
             images.setImageResource(image[i]);

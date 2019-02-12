@@ -127,7 +127,7 @@ public class Following extends AppCompatActivity {
         return true;
     }
 
-    private void follow(String name){
+    private void follow(final String name){
         final DocumentReference docRef = mStore.collection("Users").document(name);
         userReference.update("Following", FieldValue.arrayUnion(name));
         userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -138,6 +138,13 @@ public class Following extends AppCompatActivity {
                     if(snapshot.exists()){
                         ArrayList<String> followingOrNotFollowingTemp = (ArrayList<String>) snapshot.get("FollowingOrNotFollowing");
                         followingOrNotFollowingTemp.add("Followed");
+                        ArrayList<String> followingOrNotTemp2 = (ArrayList<String>) snapshot.get("FollowingOrNotFollowers");
+                        ArrayList<String> followers = (ArrayList<String>) snapshot.get("Followers");
+                        if(followers.contains(name)){
+                            Log.i("info", "yes");
+                            followingOrNotTemp2.set(followers.indexOf(name), "Followed");
+                            userReference.update("FollowingOrNotFollowers", followingOrNotTemp2);
+                        }
                         userReference.update("FollowingOrNotFollowing", followingOrNotFollowingTemp);
                     }
                 }
@@ -183,6 +190,13 @@ public class Following extends AppCompatActivity {
                     DocumentSnapshot snapshot = task.getResult();
                     if(snapshot.exists()){
                         ArrayList<String> followingOrNotTemp = (ArrayList<String>) snapshot.get("FollowingOrNotFollowing");
+                        ArrayList<String> followingOrNotTemp2 = (ArrayList<String>) snapshot.get("FollowingOrNotFollowers");
+                        ArrayList<String> followers = (ArrayList<String>) snapshot.get("Followers");
+                        if(followers.contains(name)){
+                            Log.i("info", "yes");
+                            followingOrNotTemp2.set(followers.indexOf(name), "+  Follow");
+                            userReference.update("FollowingOrNotFollowers", followingOrNotTemp2);
+                        }
                         followingOrNotTemp.remove(followingNames.indexOf(name));
                         userReference.update("FollowingOrNotFollowing", followingOrNotTemp);
                         userReference.update("Following", FieldValue.arrayRemove(name));

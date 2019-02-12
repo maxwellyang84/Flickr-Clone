@@ -1,11 +1,9 @@
 package com.mendozae.teamflickr;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,7 +33,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 
 
@@ -140,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
 
         userInfo2.put("Followers", new ArrayList<String>());
         userInfo2.put("Following", new ArrayList<String>());
+        userInfo2.put("Liked", new ArrayList<String>());
         userInfo2.put("FollowingOrNotFollowing", new ArrayList<String>());
         userInfo2.put("FollowingOrNotFollowers", new ArrayList<String>());
         userInfo2.put("AboutKeys", title);
