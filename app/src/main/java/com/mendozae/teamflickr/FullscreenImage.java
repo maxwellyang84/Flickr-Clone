@@ -24,6 +24,7 @@ public class FullscreenImage extends AppCompatActivity {
     private Button infoButton;
     private Button exitButton;
     private int state = 0;
+    private FirebaseFirestore mStore;
 
 
     @Override

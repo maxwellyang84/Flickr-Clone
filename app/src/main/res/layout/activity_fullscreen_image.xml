@@ -11,11 +11,12 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/backbutton"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
-        android:layout_centerInParent="true"/>
+        app:srcCompat="@drawable/backbutton" />
 
     <Button
         android:id="@+id/exitbutton"

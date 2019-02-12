@@ -66,6 +66,7 @@ public class SearchFeed extends Fragment implements SearchView.OnQueryTextListen
         searchView = (SearchView) getView().findViewById(R.id.searchview);
         searchView.setIconifiedByDefault(false);
         searchView.setSubmitButtonEnabled(true);
+        searchView.setBackgroundColor(Color.parseColor("#373738"));
 
         searchView.setSearchableInfo( searchManager.getSearchableInfo(new
                 ComponentName(getContext(),SearchableActivity.class)));
