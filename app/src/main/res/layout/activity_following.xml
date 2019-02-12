@@ -20,7 +20,7 @@
         android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/infotoolbar">
+        android:layout_below="@id/followingtoolbar">
     <ListView
         android:id="@+id/followinglistview"
         android:layout_width="match_parent"
