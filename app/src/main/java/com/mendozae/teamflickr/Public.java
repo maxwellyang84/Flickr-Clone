@@ -99,7 +99,7 @@ public class Public extends Fragment {
                         Log.i("Hello", "HEllo");
                     }
                 });
-                image = (ImageView) view.findViewById(R.id.imageView);
+                image = (ImageView) view.findViewById(R.id.image);
 
             }
         }
