@@ -28,10 +28,11 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.SearchView;
 import android.widget.TextView;
 
 import java.util.Objects;
+
+import static com.mendozae.teamflickr.SearchFeed.searchView;
 
 public class UserInterface extends AppCompatActivity {
 
@@ -113,6 +114,10 @@ public class UserInterface extends AppCompatActivity {
                 int tabIconColor = ContextCompat.getColor(UserInterface.this, R.color.tabSelectedIconColor); //changes color of tab to highlighted
                 (tab.getIcon()).setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
                // imm.hideSoftInputFromWindow(SearchView.getWindowToken(), 0);
+                if(searchView !=null){
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+                }
             }
 
             @Override

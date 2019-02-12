@@ -19,12 +19,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
@@ -129,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 "Add Email address...");
 
         Map<String, List<String>> userInfo2 = new HashMap<>();
+
 
         userInfo.put("Email", userEmail);
         userInfo.put("Password", userPassword);
@@ -252,7 +255,7 @@ sends the UI to UserInterface class
         getStarted = findViewById(R.id.getStarted);
 
         //set 2
-        username = findViewById(R.id.username);
+        username = findViewById(R.id.userName);
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         logInOrSignUp = findViewById(R.id.logInorSignUp);

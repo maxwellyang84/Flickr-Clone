@@ -2,17 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mendozae.teamflickr">
 
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-feature android:name="android.hardware.camera"/>
-    <uses-feature android:name="android.hardware.camera.autofocus"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/flickr"
+        android:icon="@drawable/dots"
         android:label="Flickr"
-
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
         <activity android:name=".MainActivity">
@@ -25,13 +25,31 @@
         <activity
             android:name=".UserInterface"
             android:label="@string/title_activity_main_feed"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".SearchableActivity" />
+        </activity>
         <activity android:name=".Followers" />
         <activity android:name=".Following" />
         <activity android:name=".AboutEditActivity" />
         <activity android:name=".OtherUsersProfile" />
         <activity android:name=".OtherFollowers" />
-        <activity android:name=".OtherFollowing"></activity>
+        <activity android:name=".OtherFollowing" />
+        <activity android:name=".SearchableActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <activity android:name=".FullscreenImage" />
+        <activity android:name=".PhotoInfo" />
+        <activity android:name=".OtherPhotoInfo"></activity>
     </application>
 
 </manifest>
