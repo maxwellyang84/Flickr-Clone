@@ -18,7 +18,7 @@ public class UserProfilePagerAdapter extends FragmentPagerAdapter {
             case 0:
                 return new Public(); //if the first tab is pressed, it creates a new Public() fragment object
             case 1:
-                return new Albums(); //if the second tab is pressed, it creates a new Albums() fragment object
+                return new Faves(); //if the second tab is pressed, it creates a new Albums() fragment object
             case 2:
                 return new About(); //if the third tab is pressed, it creates a new About() fragment object
             default:

@@ -57,6 +57,12 @@ public class Following extends AppCompatActivity {
 
         mStore = FirebaseFirestore.getInstance();
 
+
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
         userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -74,6 +80,7 @@ public class Following extends AppCompatActivity {
                                 String name = followingNames.get(i);
                                 Intent intent = new Intent(Following.this, OtherUsersProfile.class);
                                 intent.putExtra("Name", name);
+                                intent.putExtra("State", "Following");
                                 startActivity(intent);
                             }
                         });
@@ -97,7 +104,7 @@ public class Following extends AppCompatActivity {
 
 
 
-    private void updateFollowing(){
+    public void updateFollowing(){
         userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {

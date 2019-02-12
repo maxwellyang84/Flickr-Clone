@@ -1,6 +1,7 @@
 package com.mendozae.teamflickr;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -26,6 +27,8 @@ import android.view.ViewGroup;
 
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import java.util.Objects;
@@ -41,9 +44,9 @@ public class UserInterface extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
 
-    public static ViewPager viewPager;
-    public static TabLayout tabLayout;
-    public static int currentTab;
+    private  ViewPager viewPager;
+    private TabLayout tabLayout;
+    private InputMethodManager imm;
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -52,7 +55,12 @@ public class UserInterface extends AppCompatActivity {
     @Override
     public void onStart(){
         super.onStart();
-        viewPager.setCurrentItem(currentTab);
+        Intent intent = getIntent();
+        if(intent !=null){
+           int tabPosition =  intent.getIntExtra("Tab", 2);
+            viewPager.setCurrentItem(tabPosition);
+        }
+
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +71,7 @@ public class UserInterface extends AppCompatActivity {
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main_feed);
 
-        currentTab = 0;
+        imm = (InputMethodManager)   getSystemService(Context.INPUT_METHOD_SERVICE);
 
 
         tabLayout = (TabLayout) findViewById(R.id.tab_layout); //initializes the tablayout object
@@ -101,9 +109,10 @@ public class UserInterface extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
-                currentTab= tab.getPosition();//when a tab is selected the viewPager moves to that tab location
+                //when a tab is selected the viewPager moves to that tab location
                 int tabIconColor = ContextCompat.getColor(UserInterface.this, R.color.tabSelectedIconColor); //changes color of tab to highlighted
                 (tab.getIcon()).setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+               // imm.hideSoftInputFromWindow(SearchView.getWindowToken(), 0);
             }
 
             @Override

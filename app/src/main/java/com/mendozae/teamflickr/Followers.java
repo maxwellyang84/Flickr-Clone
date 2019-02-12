@@ -21,12 +21,16 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import static com.mendozae.teamflickr.UserProfile.user;
 import static com.mendozae.teamflickr.UserProfile.userReference;
 import java.util.ArrayList;
+
+import javax.annotation.Nullable;
 
 public class Followers extends AppCompatActivity {
 
@@ -35,8 +39,8 @@ public class Followers extends AppCompatActivity {
     ArrayList<String> followedOrNot;
     String[] DESCRIPTIONS;
     int[] IMAGES;
-    SwipeRefreshLayout swipeRefresh;
-    CustomAdapter adapter;
+    public SwipeRefreshLayout swipeRefresh;
+    public CustomAdapter adapter;
     ListView listView;
     Toolbar toolbar;
     private FirebaseFirestore mStore;
@@ -54,6 +58,14 @@ public class Followers extends AppCompatActivity {
 
         mStore = FirebaseFirestore.getInstance();
 
+
+
+
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
         userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -72,9 +84,12 @@ public class Followers extends AppCompatActivity {
 
                                 Intent intent = new Intent(Followers.this, OtherUsersProfile.class);
                                 intent.putExtra("Name", name);
+                                intent.putExtra("State", "Followers");
                                 startActivity(intent);
                             }
                         });
+
+
 
                         swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
                         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -89,13 +104,11 @@ public class Followers extends AppCompatActivity {
                 }
             }
         });
-
-
     }
 
 
 
-    private void updateFollowers(){
+    public void updateFollowers(){
         userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {

@@ -38,6 +38,7 @@ public class OtherUsersProfile extends AppCompatActivity {
     private FirebaseFirestore mStore;
     private TextView followers;
     private TextView following;
+    private String state;
 
 
 
@@ -54,6 +55,7 @@ public class OtherUsersProfile extends AppCompatActivity {
         Intent intent = getIntent();
         userProfileName = intent.getStringExtra("Name");
         userCalledName = UserProfile.user;
+        state = intent.getStringExtra("State");
 
         mStore = FirebaseFirestore.getInstance();
         docRef = mStore.collection("Users").document(userProfileName);
@@ -160,6 +162,8 @@ public class OtherUsersProfile extends AppCompatActivity {
                                     Integer followingSize = ((ArrayList<String>) documentSnapshot.get("Following")).size();
                                     followers.setText(followersSize.toString() + " Followers");
                                     following.setText(followingSize.toString() + " Following");
+
+
                                 }else{
                                     Log.i("info", "it's null");
                                 }

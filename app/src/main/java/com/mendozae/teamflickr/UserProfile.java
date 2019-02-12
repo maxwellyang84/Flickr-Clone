@@ -55,6 +55,7 @@ public class UserProfile extends Fragment {
 
 
 
+
     @Override
     public void onCreate(Bundle SavedInstanceState) {
 
@@ -116,7 +117,7 @@ public class UserProfile extends Fragment {
             tabLayout.addTab(tabLayout.newTab()); //adds three tabs
         }
         tabLayout.getTabAt(0).setText("Public"); //sets the name of tabs for each respective tab
-        tabLayout.getTabAt(1).setText("Albums");
+        tabLayout.getTabAt(1).setText("Faves");
         tabLayout.getTabAt(2).setText("About");
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#F5F5F5")); //sets the tab indicator color
