@@ -38,7 +38,7 @@ public class OtherUsersProfile extends AppCompatActivity {
     private FirebaseFirestore mStore;
     private TextView followers;
     private TextView following;
-    private String state;
+
 
 
 
@@ -54,8 +54,9 @@ public class OtherUsersProfile extends AppCompatActivity {
 
         Intent intent = getIntent();
         userProfileName = intent.getStringExtra("Name");
+        UserProfile.currentUser = intent.getStringExtra("Name");
         userCalledName = UserProfile.user;
-        state = intent.getStringExtra("State");
+
 
         mStore = FirebaseFirestore.getInstance();
         docRef = mStore.collection("Users").document(userProfileName);
@@ -104,7 +105,7 @@ public class OtherUsersProfile extends AppCompatActivity {
             tabLayout.addTab(tabLayout.newTab()); //adds three tabs
         }
         tabLayout.getTabAt(0).setText("Public"); //sets the name of tabs for each respective tab
-        tabLayout.getTabAt(1).setText("Albums");
+        tabLayout.getTabAt(1).setText("Faves");
         tabLayout.getTabAt(2).setText("About");
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#F5F5F5")); //sets the tab indicator color

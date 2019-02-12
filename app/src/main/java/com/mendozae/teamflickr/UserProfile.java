@@ -52,6 +52,7 @@ public class UserProfile extends Fragment {
     private TextView followers;
     public static DocumentReference userReference;
     private FirebaseFirestore mStore;
+    public static String currentUser;
 
 
 
@@ -76,6 +77,7 @@ public class UserProfile extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
+        currentUser = MainActivity.sharedPreferences.getString("username", "hello");
         userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {

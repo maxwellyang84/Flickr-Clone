@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
@@ -97,7 +98,7 @@ public class SearchableActivity extends AppCompatActivity {
                @Override
                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     for(QueryDocumentSnapshot s: queryDocumentSnapshots){
-                        String url = (String) s.get("Url");
+                        String url = (String) s.get("URI");
                         if(images.contains(url))
                         images.add(url);
                     }
@@ -164,7 +165,7 @@ public class SearchableActivity extends AppCompatActivity {
 
         // Replace the contents of a view (invoked by the layout manager)
         @Override
-        public void onBindViewHolder(MyViewHolder holder, int position) {
+        public void onBindViewHolder(MyViewHolder holder, final int position) {
             // - get element from your dataset at this position
             // - replace the contents of the view with that element
             Log.i("sup", String.valueOf(position));
@@ -172,20 +173,12 @@ public class SearchableActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(SearchableActivity.this, FullscreenImage.class);
-                    intent.putExtra("image", R.drawable.elephant);
+                    intent.putExtra("image", images.get(position));
                     startActivity(intent);
                 }
             });
-            if(position == 3) {
-                holder.mImageView.setImageResource(R.drawable.backbutton);
-            }else if(position==4){
 
-                holder.mImageView.setImageResource(R.drawable.cambutton);
-            }else{
-                holder.mImageView.setImageResource(R.drawable.elephant);
-            }
-
-
+            Glide.with(SearchableActivity.this).load(images.get(position)).into(holder.mImageView);
         }
 
         // Return the size of your dataset (invoked by the layout manager)
