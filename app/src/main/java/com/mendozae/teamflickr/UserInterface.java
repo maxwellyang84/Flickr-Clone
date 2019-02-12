@@ -1,5 +1,7 @@
 package com.mendozae.teamflickr;
 
+import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.support.design.widget.TabLayout;
@@ -12,6 +14,16 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
+
+import java.util.Objects;
+
+import static com.mendozae.teamflickr.SearchFeed.searchView;
 
 public class UserInterface extends AppCompatActivity {
 
@@ -24,12 +36,24 @@ public class UserInterface extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
 
-
+    private  ViewPager viewPager;
+    private TabLayout tabLayout;
+    private InputMethodManager imm;
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    private ViewPager mViewPager;
 
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        Intent intent = getIntent();
+        if(intent !=null){
+           int tabPosition =  intent.getIntExtra("Tab", 2);
+            viewPager.setCurrentItem(tabPosition);
+        }
+
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,9 +63,10 @@ public class UserInterface extends AppCompatActivity {
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_user_interface);
 
+        imm = (InputMethodManager)   getSystemService(Context.INPUT_METHOD_SERVICE);
 
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout); //initializes the tablayout object
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout); //initializes the tablayout object
         for(int i = 0; i <=3; i++) {
             tabLayout.addTab(tabLayout.newTab()); //adds four tabs to the tablayout
         }
@@ -64,7 +89,7 @@ public class UserInterface extends AppCompatActivity {
         }
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager); //declares viewPager
+         viewPager = (ViewPager) findViewById(R.id.pager); //declares viewPager
         final PageAdapter adapter = new PageAdapter(getSupportFragmentManager(), tabLayout.getTabCount()); //sets the adapter with the
         //support FragmentManager, and the number of tabs
         viewPager.setOffscreenPageLimit(2);
@@ -75,9 +100,15 @@ public class UserInterface extends AppCompatActivity {
 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition()); //when a tab is selected the viewPager moves to that tab location
+                viewPager.setCurrentItem(tab.getPosition());
+                //when a tab is selected the viewPager moves to that tab location
                 int tabIconColor = ContextCompat.getColor(UserInterface.this, R.color.tabSelectedIconColor); //changes color of tab to highlighted
                 (tab.getIcon()).setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+               // imm.hideSoftInputFromWindow(SearchView.getWindowToken(), 0);
+                if(searchView !=null){
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+                }
             }
 
             @Override

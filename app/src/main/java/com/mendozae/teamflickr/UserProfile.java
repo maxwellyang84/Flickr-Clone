@@ -31,8 +31,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import org.w3c.dom.Document;
 
 import java.util.ArrayList;
-
-
+import java.util.HashMap;
 
 
 /**
@@ -53,6 +52,7 @@ public class UserProfile extends Fragment {
     private TextView followers;
     public static DocumentReference userReference;
     private FirebaseFirestore mStore;
+
 
 
 
@@ -84,7 +84,7 @@ public class UserProfile extends Fragment {
                     if(snapshot.exists()){
                         followers = (TextView) getView().findViewById(R.id.followers);
                         following = (TextView) getView().findViewById(R.id.following);
-                        Integer followersSize = ((ArrayList<String>)snapshot.get("Followers")).size();
+                        Integer followersSize = ((ArrayList<String>) snapshot.get("Followers")).size();
                         Integer followingSize = ((ArrayList<String>) snapshot.get("Following")).size();
                         followers.setText(followersSize.toString() + " Followers");
                         following.setText(followingSize.toString() + " Following");
@@ -117,7 +117,7 @@ public class UserProfile extends Fragment {
             tabLayout.addTab(tabLayout.newTab()); //adds three tabs
         }
         tabLayout.getTabAt(0).setText("Public"); //sets the name of tabs for each respective tab
-        tabLayout.getTabAt(1).setText("Albums");
+        tabLayout.getTabAt(1).setText("Faves");
         tabLayout.getTabAt(2).setText("About");
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#F5F5F5")); //sets the tab indicator color

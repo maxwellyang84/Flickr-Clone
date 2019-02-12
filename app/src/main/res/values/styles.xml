@@ -26,4 +26,9 @@
 
     </style>
 
+    <style name="SearchStyle" parent="Theme.AppCompat">
+        <item name="android:editTextColor">@android:color/white</item>
+        <item name="android:textColorHint">@android:color/darker_gray</item>
+    </style>
+
 </resources>
