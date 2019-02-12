@@ -161,7 +161,6 @@ public class MyCamera extends Fragment implements SurfaceHolder.Callback{
                 e.printStackTrace();
             }
         }
-        Toast.makeText(getContext(), directory.getAbsolutePath(), Toast.LENGTH_SHORT).show();
         return directory.getAbsolutePath();
     }
 

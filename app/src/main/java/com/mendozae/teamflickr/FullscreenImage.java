@@ -2,19 +2,12 @@ package com.mendozae.teamflickr;
 
 import android.content.Intent;
 import android.graphics.PorterDuff;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 public class FullscreenImage extends AppCompatActivity {
 
@@ -32,7 +25,7 @@ public class FullscreenImage extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen_image);
-        image = (ImageView) findViewById(R.id.imageView);
+        image = (ImageView) findViewById(R.id.imageHolder);
         image.setImageResource(R.drawable.elephant);
 
         exitButton = (Button) findViewById(R.id.exitbutton);

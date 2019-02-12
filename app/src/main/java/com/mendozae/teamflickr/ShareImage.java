@@ -30,6 +30,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -72,6 +73,7 @@ public class ShareImage extends AppCompatActivity {
     }
 
     ProgressDialog progressDialog;
+    int uid;
 
     private void saveToFB(File f) {
         //upload to firebase storage
@@ -87,44 +89,49 @@ public class ShareImage extends AppCompatActivity {
         final Map<String, String> photoInfo = new HashMap<>();
         final Map<String, List<String>> photoTags = new HashMap<>();
 
-        photoInfo.put("user", auth.getCurrentUser().getDisplayName());
-        photoInfo.put("title", about[0].getText().toString());
-        photoInfo.put("location", about[2].getText().toString());
-        photoInfo.put("description", about[3].getText().toString());
-        photoInfo.put("numLikes", Integer.toString(0));
+        photoInfo.put("User", auth.getCurrentUser().getDisplayName());
+        photoInfo.put("Title", about[0].getText().toString());
+        photoInfo.put("Location", about[2].getText().toString());
+        photoInfo.put("Description", about[3].getText().toString());
+        photoInfo.put("Number of Likes", Integer.toString(0));
 
         String tags[] = about[1].getText().toString().split(" ");
-        photoTags.put("tags", Arrays.asList(tags));
-        Log.i("tags", tags.toString());
+        photoTags.put("Tags", Arrays.asList(tags));
 
-        final StorageReference imageRef = storageReference.child("img/" + auth.getCurrentUser().getUid()  + "/" + about[0].getText().toString() + ".jpg");
+        //add photo document
+        final FirebaseFirestore mStore = FirebaseFirestore.getInstance();
+        mStore.collection("Photos").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                uid = queryDocumentSnapshots.size();
+            }
+        });
+
+        final StorageReference imageRef = storageReference.child("img/" + auth.getCurrentUser().getUid()  + "/" + uid + ".jpg");
 
         try {
             final UploadTask uploadTask = imageRef.putStream(new FileInputStream(f));
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Toast.makeText(ShareImage.this, "Upload Success", Toast.LENGTH_SHORT).show();
                     progressDialog.hide();
                     //grab URI
                     imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            photoInfo.put("uri", uri.toString());
+                            photoInfo.put("URI", uri.toString());
 
                             //add Timestamp to photo field
-                            Map<String, FieldValue> photoTime = new HashMap<>();
-                            photoTime.put("created", FieldValue.serverTimestamp());
+                            final Map<String, FieldValue> photoTime = new HashMap<>();
+                            photoTime.put("Time Created", FieldValue.serverTimestamp());
 
-                            //add photo document
-                            FirebaseFirestore mStore = FirebaseFirestore.getInstance();
-
-                            mStore.collection("Photos").document(about[0].getText().toString()).set(photoInfo, SetOptions.merge());
-                            mStore.collection("Photos").document(about[0].getText().toString()).set(photoTags, SetOptions.merge());
-                            mStore.collection("Photos").document(about[0].getText().toString()).set(photoTime, SetOptions.merge());
+                            //add photo information
+                            mStore.collection("Photos").document(Integer.toString(uid)).set(photoInfo, SetOptions.merge());
+                            mStore.collection("Photos").document(Integer.toString(uid)).set(photoTags, SetOptions.merge());
+                            mStore.collection("Photos").document(Integer.toString(uid)).set(photoTime, SetOptions.merge());
 
                             //link photo to user
-                            mStore.collection("Users").document(auth.getCurrentUser().getDisplayName()).update("Uploads", FieldValue.arrayUnion(about[0].getText().toString()));
+                            mStore.collection("Users").document(auth.getCurrentUser().getDisplayName()).update("Uploads", FieldValue.arrayUnion(Integer.toString(uid)));
                         }
                     });
                 }
@@ -137,11 +144,9 @@ public class ShareImage extends AppCompatActivity {
             }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-/*
                     Intent intent = new Intent(ShareImage.this, UserInterface.class);
                     intent.putExtra("Tab", 2);
                     startActivity(intent);
-*/
                 }
             });
         } catch (FileNotFoundException e) {
