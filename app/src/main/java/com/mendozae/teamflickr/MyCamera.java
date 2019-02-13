@@ -1,6 +1,7 @@
 package com.mendozae.teamflickr;
 
 import android.Manifest;
+import android.app.Instrumentation;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -18,6 +20,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +55,7 @@ public class MyCamera extends Fragment implements SurfaceHolder.Callback{
     ImageView cancel;
     ImageView imageHolder;
     Bitmap rotateBitmap;
+    Button cameraRoll;
 
 
     private void captureImage() {
@@ -65,11 +69,25 @@ public class MyCamera extends Fragment implements SurfaceHolder.Callback{
         cancel.setVisibility(View.GONE);
         imageHolder.setVisibility(View.GONE);
     }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_camera, container, false);
         surfaceView = view.findViewById(R.id.surfaceView);
+
+        cameraRoll = view.findViewById(R.id.cameraRoll);
+        cameraRoll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+
+                Intent chooser = Intent.createChooser(intent, "Choose a Picture");
+                startActivityForResult(chooser, 0);
+            }
+        });
+
         capture = view.findViewById(R.id.capture);
         capture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -217,4 +235,5 @@ public class MyCamera extends Fragment implements SurfaceHolder.Callback{
                 }
         }
     }
+
 }

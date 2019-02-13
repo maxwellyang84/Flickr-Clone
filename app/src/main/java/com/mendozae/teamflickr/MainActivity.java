@@ -137,13 +137,14 @@ public class MainActivity extends AppCompatActivity {
 
         userInfo2.put("Followers", new ArrayList<String>());
         userInfo2.put("Following", new ArrayList<String>());
-        userInfo2.put("Liked", new ArrayList<String>());
+        userInfo2.put("Likes", new ArrayList<String>());
         userInfo2.put("FollowingOrNotFollowing", new ArrayList<String>());
         userInfo2.put("FollowingOrNotFollowers", new ArrayList<String>());
         userInfo2.put("AboutKeys", title);
         userInfo2.put("AboutValues", description);
         userInfo2.put("Comments Posted", new ArrayList<String>());
         userInfo2.put("Previous Searches", new ArrayList<String>());
+        userInfo2.put("Uploads", new ArrayList<String>());
         ddb.collection("Users").document(userName).set(userInfo2, SetOptions.merge());
     }
 
