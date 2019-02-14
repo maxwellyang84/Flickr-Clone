@@ -48,9 +48,10 @@ public class UserInterface extends AppCompatActivity {
     @Override
     public void onStart(){
         super.onStart();
-        String className = getIntent().getComponent().getClassName().toString();
-        if(className.equals("com.mendozae.teamflickr.UserInterface")){
-            viewPager.setCurrentItem(2);
+        int tabPosition = MainActivity.userInterfaceSharedPreferences.getInt("Tab", 2);
+        if(tabLayout !=null){
+            TabLayout.Tab tab = tabLayout.getTabAt(tabPosition);
+            tab.select();
         }
 
 
