@@ -80,6 +80,7 @@ public class ShareImage extends AppCompatActivity {
         //upload to firebase storage
         //link to user (user should have a list of all images posted)
         //create a collection to hold about stuff
+        MainActivity.userInterfaceSharedPreferences.edit().putInt("Tab", 2);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Uploading Image...");
         progressDialog.show();
