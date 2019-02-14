@@ -66,11 +66,7 @@ public class SearchableActivity extends AppCompatActivity {
         mStore = FirebaseFirestore.getInstance();
         photoRef = mStore.collection("Photos");
         images = new ArrayList<>();
-        images.add("1");
-        images.add("2");
-        images.add("3");
-        images.add("4");
-        images.add("5");
+
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
@@ -78,7 +74,7 @@ public class SearchableActivity extends AppCompatActivity {
 
         mAdapter = new MyAdapter(images);
 
-        mRecyclerView.setAdapter(mAdapter);
+
 
         Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
@@ -93,15 +89,19 @@ public class SearchableActivity extends AppCompatActivity {
 
     private void doMySearch(List<String> query){
         for(int i = 0; i < query.size(); i++) {
-           Query mainQuery = photoRef.whereArrayContains("Tag", query.get(i));
+           Query mainQuery = photoRef.whereArrayContains("Tags", query.get(i));
            mainQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                @Override
                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     for(QueryDocumentSnapshot s: queryDocumentSnapshots){
+                        Log.i("Hello", "I am here");
                         String url = (String) s.get("URI");
-                        if(images.contains(url))
-                        images.add(url);
+                        if(!images.contains(url)) {
+                            Log.i("fkljwe;f", "fekfj");
+                            images.add(url);
+                        }
                     }
+                   mRecyclerView.setAdapter(mAdapter);
                }
            });
         }
@@ -173,7 +173,7 @@ public class SearchableActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(SearchableActivity.this, FullscreenImage.class);
-                    intent.putExtra("image", images.get(position));
+                    intent.putExtra("Image", images.get(position));
                     startActivity(intent);
                 }
             });

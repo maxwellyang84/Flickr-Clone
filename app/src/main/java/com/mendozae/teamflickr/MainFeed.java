@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -39,12 +41,11 @@ public class MainFeed extends Fragment {
     FirebaseFirestore mStore;
     FirebaseAuth mAuth;
     ArrayList<String> followingPhotos;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_main_feed, container, false);
-        ListView listView = view.findViewById(R.id.listView);
+    public void onStart(){
+        super.onStart();
+        final RecyclerView recyclerView = getView().findViewById(R.id.listView);
         mStore = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
@@ -63,17 +64,24 @@ public class MainFeed extends Fragment {
                             for (String photoUId : uploads){
                                 followingPhotos.add(photoUId);
                             }
+                            Log.i("Number of Photos", Integer.toString(followingPhotos.size()));
+                            CustomAdapter customAdapter = new CustomAdapter();
+                            recyclerView.setAdapter(customAdapter);
                         }
                     });
                 }
+
             }
         });
-
+    }
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_main_feed, container, false);
 
     }
 
-    class CustomAdapter extends BaseAdapter{
+    class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder>{
         @Override
         public int getCount() {
             return followingPhotos.size();
@@ -93,21 +101,21 @@ public class MainFeed extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent) {
             convertView = getLayoutInflater().inflate(R.layout.custom_main_feed, null);
 
-            ImageView photo = convertView.findViewById(R.id.imageHolder),
+            final ImageView photo = convertView.findViewById(R.id.imageHolder),
             star = convertView.findViewById(R.id.star),
             info = convertView.findViewById(R.id.mainInfo);
-            TextView user = convertView.findViewById(R.id.userHolder),
+            final TextView user = convertView.findViewById(R.id.userHolder),
             titleHolder = convertView.findViewById(R.id.title);
 
             mStore.collection("Photos").document(followingPhotos.get(position)).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    Glide.with(getContext()).load(documentSnapshot.get("URI")).into(photo);
+                    user.setText(documentSnapshot.get("User").toString());
+                    titleHolder.setText(documentSnapshot.get("Title").toString());
 
                 }
             });
-
-
-
 
             return convertView;
         }

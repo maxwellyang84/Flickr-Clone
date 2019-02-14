@@ -11,8 +11,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="0dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginRight="15dp"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
     <TextView
@@ -35,7 +38,7 @@
         android:layout_height="45dp"
         android:layout_below="@+id/imageHolder"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="0dp"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="0dp"
         app:srcCompat="@drawable/ic_account" />
 
@@ -68,7 +71,7 @@
         android:layout_below="@+id/imageHolder"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="5dp"
+        android:layout_marginEnd="15dp"
         app:srcCompat="@drawable/ic_info" />
 
     <ImageView
