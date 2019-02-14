@@ -73,6 +73,8 @@ public class UserInterface extends AppCompatActivity {
             tabLayout.addTab(tabLayout.newTab()); //adds four tabs to the tablayout
         }
 
+
+
         //sets the tab icon for each tab
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_photo_library);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_search);
@@ -96,6 +98,11 @@ public class UserInterface extends AppCompatActivity {
         //support FragmentManager, and the number of tabs
         viewPager.setOffscreenPageLimit(2);
         viewPager.setAdapter(adapter);
+        int tabPosition = MainActivity.userInterfaceSharedPreferences.getInt("Tab", 2);
+        if(tabLayout !=null){
+            TabLayout.Tab tab = tabLayout.getTabAt(tabPosition);
+            tab.select();
+        }
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){ //a listener for when tabs are selected
