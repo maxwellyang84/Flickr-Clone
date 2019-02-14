@@ -67,7 +67,7 @@ public class SearchableActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.listview);
 
 
-        int tab = SearchFeed.sharedPreferences.getInt("Tab", 2);
+        int tab = SearchFeed.searchFeedSharedPreferences.getInt("Tab", 2);
 
         if(tab == 0) {
             listView.setVisibility(View.GONE);
@@ -76,7 +76,7 @@ public class SearchableActivity extends AppCompatActivity {
 
 
             mRecyclerView.setHasFixedSize(true);
-            mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+            mLayoutManager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
             mRecyclerView.setLayoutManager(mLayoutManager);
 
             mAdapter = new MyAdapter(images);

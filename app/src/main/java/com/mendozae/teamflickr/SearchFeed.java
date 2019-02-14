@@ -27,7 +27,7 @@ public class SearchFeed extends Fragment implements SearchView.OnQueryTextListen
     public static SearchView searchView;
     SearchManager searchManager;
     private int tabPosition;
-    public static SharedPreferences sharedPreferences;
+    public static SharedPreferences searchFeedSharedPreferences;
 
 
 
@@ -61,7 +61,7 @@ public class SearchFeed extends Fragment implements SearchView.OnQueryTextListen
         viewPager.setOffscreenPageLimit(2);
         viewPager.setAdapter(adapter);
         tabPosition = tabLayout.getSelectedTabPosition();
-        sharedPreferences = getContext().getSharedPreferences("com.mendozae.teamflickr", Context.MODE_PRIVATE);
+        searchFeedSharedPreferences = getContext().getSharedPreferences("com.mendozae.teamflickr", Context.MODE_PRIVATE);
 
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -71,7 +71,7 @@ public class SearchFeed extends Fragment implements SearchView.OnQueryTextListen
                 viewPager.setCurrentItem(tab.getPosition()); //viewPager sets the tab position to the one that was selected
                 Log.i("info", "Selected tab");
                 tabPosition = tab.getPosition();
-                sharedPreferences.edit().putInt("Tab", tabPosition).apply();
+                searchFeedSharedPreferences.edit().putInt("Tab", tabPosition).apply();
             }
 
             @Override
@@ -153,11 +153,13 @@ public class SearchFeed extends Fragment implements SearchView.OnQueryTextListen
 
 
     public static void hideSoftKeyboard(Activity activity) {
-        InputMethodManager inputMethodManager =
-                (InputMethodManager) activity.getSystemService(
-                        Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(
-                activity.getCurrentFocus().getWindowToken(), 0);
+        if(activity!=null) {
+            InputMethodManager inputMethodManager =
+                    (InputMethodManager) activity.getSystemService(
+                            Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(
+                    activity.getCurrentFocus().getWindowToken(), 0);
+        }
     }
 
 

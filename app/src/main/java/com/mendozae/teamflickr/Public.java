@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -24,7 +25,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EventListener;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 
 /**
@@ -59,13 +64,14 @@ public class Public extends Fragment {
 
         mStore = FirebaseFirestore.getInstance();
         photoRef = mStore.collection("Photos");
-        Query query = photoRef.whereEqualTo("User", UserProfile.currentUser );
+        final Query query = photoRef.whereEqualTo("User", UserProfile.currentUser );
         query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for(QueryDocumentSnapshot snapshot: queryDocumentSnapshots){
                     URLs.add((String) snapshot.get("URI"));
                 }
+                Collections.reverse(URLs);
                 // use this setting to improve performance if you know that changes
                 // in content do not change the layout size of the RecyclerView
                 mRecyclerView.setHasFixedSize(true);
@@ -77,6 +83,17 @@ public class Public extends Fragment {
                 // specify an adapter (see also next example)
                 mAdapter = new MyAdapter(URLs);
                 mRecyclerView.setAdapter(mAdapter);
+                query.addSnapshotListener(new com.google.firebase.firestore.EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        URLs = new ArrayList<>();
+                        for(QueryDocumentSnapshot snapshot: queryDocumentSnapshots){
+                            URLs.add((String) snapshot.get("URI"));
+                        }
+                        Collections.reverse(URLs);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -97,7 +114,7 @@ public class Public extends Fragment {
         @NonNull
         @Override
         public MyAdapter.myViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-            View view= LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_custom_photos2, viewGroup, false);
+            View view= LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_custom_photos, viewGroup, false);
             myViewHolder vh = new myViewHolder(view);
             return vh;
         }

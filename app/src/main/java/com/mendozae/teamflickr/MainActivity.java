@@ -17,20 +17,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private String userName;
     private String userEmail;
     private String userPassword;
-    public static SharedPreferences sharedPreferences;
+    public static SharedPreferences userInterfaceSharedPreferences;
     Map<String, String> userInfo;
 
 
@@ -168,8 +165,9 @@ sends the UI to UserInterface class
  */
     private void updateUI(){
         Intent intent = new Intent(getApplicationContext(), UserInterface.class);
-        sharedPreferences = this.getSharedPreferences("com.mendozae.teamflickr", Context.MODE_PRIVATE);
-        sharedPreferences.edit().putString("username", mAuth.getCurrentUser().getDisplayName()).apply();
+        userInterfaceSharedPreferences = this.getSharedPreferences("com.mendozae.teamflickr", Context.MODE_PRIVATE);
+        userInterfaceSharedPreferences.edit().putString("username", mAuth.getCurrentUser().getDisplayName()).apply();
+        userInterfaceSharedPreferences.edit().putInt("Tab", 2);
         startActivity(intent);
     }
     public void switcher (View view){

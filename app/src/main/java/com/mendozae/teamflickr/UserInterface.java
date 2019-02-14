@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,11 +48,11 @@ public class UserInterface extends AppCompatActivity {
     @Override
     public void onStart(){
         super.onStart();
-        Intent intent = getIntent();
-        if(intent !=null){
-           int tabPosition =  intent.getIntExtra("Tab", 2);
-            viewPager.setCurrentItem(tabPosition);
+        String className = getIntent().getComponent().getClassName().toString();
+        if(className.equals("com.mendozae.teamflickr.UserInterface")){
+            viewPager.setCurrentItem(2);
         }
+
 
     }
     @Override
@@ -109,6 +110,8 @@ public class UserInterface extends AppCompatActivity {
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
                 }
+                Log.i("fjaf", String.valueOf(tab.getPosition()));
+                MainActivity.userInterfaceSharedPreferences.edit().putInt("Tab", tab.getPosition()).apply();
             }
 
             @Override

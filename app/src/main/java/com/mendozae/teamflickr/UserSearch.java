@@ -57,6 +57,9 @@ public class UserSearch extends Fragment {
     public void onStart(){
         super.onStart();
         Log.i("hmm", "hmmm");
+       if(adapter !=null){
+           adapter.notifyDataSetChanged();
+       }
         users = new ArrayList<>();
         mStore = FirebaseFirestore.getInstance();
         userListRef = mStore.collection("Users");

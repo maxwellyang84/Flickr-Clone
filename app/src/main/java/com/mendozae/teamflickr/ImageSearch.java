@@ -4,13 +4,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +43,9 @@ public class ImageSearch extends Fragment {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private List<String> images;
+    private CollectionReference photoRef;
+    private FirebaseFirestore mStore;
+    private ArrayList<String> following;
 
 
     @Override
@@ -42,14 +58,50 @@ public class ImageSearch extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
-        mRecyclerView = (RecyclerView) getView().findViewById(R.id.recyclerview);
-        mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(mLayoutManager);
         images = new ArrayList<>();
-        mAdapter = new MyAdapter(images);
+        mStore = FirebaseFirestore.getInstance();
+        photoRef = mStore.collection("Photos");
+        UserProfile.userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot snapshot = task.getResult();
+                    if(snapshot.exists()){
+                        Log.i("Hello", "doing following");
+                         following = (ArrayList<String>) snapshot.get("Following");
+                        photoRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                for(QueryDocumentSnapshot snapshot2: queryDocumentSnapshots){
+                                    String currentUser = (String) snapshot2.get("User");
+                                    if(!following.contains(currentUser) && !UserProfile.user.equals(currentUser)) {
+                                        images.add((String) snapshot2.get("URI"));
+                                        Log.i("hello", "adding photos");
+                                    }
+                                }
+                                mRecyclerView = (RecyclerView) getView().findViewById(R.id.recyclerview);
+                                mRecyclerView.setHasFixedSize(true);
+                                mLayoutManager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
+                                mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mRecyclerView.setAdapter(mAdapter);
+                                mAdapter = new MyAdapter(images);
+                                Log.i("hello", String.valueOf(images.size()));
+                                mRecyclerView.setAdapter(mAdapter);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.i("hello","it failed");
+                            }
+                        });
+
+
+                    }
+                }
+            }
+        });
+
+
     }
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
@@ -87,15 +139,16 @@ public class ImageSearch extends Fragment {
 
         // Replace the contents of a view (invoked by the layout manager)
         @Override
-        public void onBindViewHolder(MyAdapter.MyViewHolder holder, int position) {
+        public void onBindViewHolder(MyAdapter.MyViewHolder holder, final int position) {
             // - get element from your dataset at this position
             // - replace the contents of the view with that element
 
+            Glide.with(getContext()).load(images.get(position)).into(holder.mImageView);
             holder.mImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getContext(), FullscreenImage.class);
-                    intent.putExtra("image", R.drawable.elephant);
+                    intent.putExtra("Image", images.get(position));
                     startActivity(intent);
                 }
             });
