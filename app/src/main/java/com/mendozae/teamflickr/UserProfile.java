@@ -1,17 +1,13 @@
 package com.mendozae.teamflickr;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -28,10 +24,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.w3c.dom.Document;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 /**
@@ -61,7 +54,7 @@ public class UserProfile extends Fragment {
     public void onCreate(Bundle SavedInstanceState) {
 
         super.onCreate(SavedInstanceState);
-        user = MainActivity.sharedPreferences.getString("username", "hello");
+        user = MainActivity.userInterfaceSharedPreferences.getString("username", "hello");
         mStore = FirebaseFirestore.getInstance();
         userReference = mStore.collection("Users").document(user);
 
@@ -77,7 +70,7 @@ public class UserProfile extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
-        currentUser = MainActivity.sharedPreferences.getString("username", "hello");
+        currentUser = MainActivity.userInterfaceSharedPreferences.getString("username", "hello");
         userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {

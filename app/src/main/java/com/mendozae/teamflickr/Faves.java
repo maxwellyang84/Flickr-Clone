@@ -17,9 +17,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.ArrayList;
+import java.util.Collections;
+
+import javax.annotation.Nullable;
 
 
 /**
@@ -61,7 +66,8 @@ public class Faves extends Fragment {
                  DocumentSnapshot snapshot = task.getResult();
                  if (snapshot.exists()) {
                       likes = (ArrayList<String>) snapshot.get("Likes");
-                     if(likes != null){
+                      Collections.reverse(likes);
+                     if (likes != null){
                          // use this setting to improve performance if you know that changes
                          // in content do not change the layout size of the RecyclerView
                          mRecyclerView.setHasFixedSize(true);
@@ -74,6 +80,23 @@ public class Faves extends Fragment {
                          // specify an adapter (see also next example)
                          mAdapter = new MyAdapter(likes);
                          mRecyclerView.setAdapter(mAdapter);
+                         userRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                             @Override
+                             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                                 if(e!=null){
+                                     return;
+                                 }
+
+                                 if(documentSnapshot !=null && documentSnapshot.exists()){
+                                     likes = (ArrayList<String>) documentSnapshot.get("Likes");
+                                     Collections.reverse(likes);
+                                     mAdapter.notifyDataSetChanged();
+
+                                 }else{
+                                     Log.i("info", "it's null");
+                                 }
+                             }
+                         });
                      }
                  }
              }
@@ -93,7 +116,7 @@ public class Faves extends Fragment {
         @NonNull
         @Override
         public MyAdapter.myViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-            View view= LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_custom_photos2, viewGroup, false);
+            View view= LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_custom_photos, viewGroup, false);
             MyAdapter.myViewHolder vh = new MyAdapter.myViewHolder(view);
             return vh;
         }
