@@ -157,7 +157,7 @@ public class SearchFeed extends Fragment implements SearchView.OnQueryTextListen
             InputMethodManager inputMethodManager =
                     (InputMethodManager) activity.getSystemService(
                             Activity.INPUT_METHOD_SERVICE);
-            if(activity.getCurrentFocus().getWindowToken() !=null) {
+            if(activity.getCurrentFocus() !=null) {
                 inputMethodManager.hideSoftInputFromWindow(
                         activity.getCurrentFocus().getWindowToken(), 0);
             }

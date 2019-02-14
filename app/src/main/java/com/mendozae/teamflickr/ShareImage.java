@@ -145,6 +145,7 @@ public class ShareImage extends AppCompatActivity {
                         public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                             Intent intent = new Intent(ShareImage.this, UserInterface.class);
                             intent.putExtra("Tab", 2);
+                            intent.putExtra("Intent", "Yes");
                             startActivity(intent);
                         }
                     });

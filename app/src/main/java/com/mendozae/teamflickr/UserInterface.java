@@ -48,10 +48,12 @@ public class UserInterface extends AppCompatActivity {
     @Override
     public void onStart(){
         super.onStart();
-        int tabPosition = MainActivity.userInterfaceSharedPreferences.getInt("Tab", 2);
-        if(tabLayout !=null){
-            TabLayout.Tab tab = tabLayout.getTabAt(tabPosition);
-            tab.select();
+        Intent intent = getIntent();
+        String allowance = intent.getStringExtra("Intent");
+
+        if(allowance !=null && allowance.equals("Yes")){
+            int tabPosition = intent.getIntExtra("Tab", 4);
+            viewPager.setCurrentItem(tabPosition);
         }
 
 
