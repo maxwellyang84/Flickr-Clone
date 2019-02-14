@@ -3,6 +3,7 @@ package com.mendozae.teamflickr;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.util.Log;
 
 public class PageAdapter extends FragmentPagerAdapter {
     private int numOfTabs;
@@ -16,6 +17,7 @@ public class PageAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position){
             switch(position){
                 case 0:
+                    Log.i("hello", "here");
                     return new MainFeed(); //if the first tab is pressed, creates a new MainFeed() fragment object
                 case 1:
                     return new SearchFeed(); //if the second tab is pressed, creates a new SearchFeed() fragment object

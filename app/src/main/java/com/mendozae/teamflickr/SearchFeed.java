@@ -4,40 +4,31 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 
-import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.SearchView;
-
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class SearchFeed extends Fragment implements SearchView.OnQueryTextListener {
 
     public static SearchView searchView;
     SearchManager searchManager;
-    private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private List<String> images;
+    private int tabPosition;
+    public static SharedPreferences sharedPreferences;
+
 
 
 
@@ -55,10 +46,44 @@ public class SearchFeed extends Fragment implements SearchView.OnQueryTextListen
     }
 
     @Override
-    public void onStart(){
-        super.onStart();
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState){
+        TabLayout tabLayout = (TabLayout) getView().findViewById(R.id.tablayout); //initializes the tablayout object
+        for(int i = 0; i < 2; i++){
+            tabLayout.addTab(tabLayout.newTab()); //adds three tabs
+        }
+        tabLayout.getTabAt(0).setText("Photos"); //sets the name of tabs for each respective tab
+        tabLayout.getTabAt(1).setText("Users");
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#F5F5F5")); //sets the tab indicator color
+
+        final ViewPager viewPager = (ViewPager) getView().findViewById(R.id.page); //declares viewpager
+        final SearchFeedAdapter adapter = new SearchFeedAdapter(getChildFragmentManager(),tabLayout.getTabCount());
+        viewPager.setOffscreenPageLimit(2);
+        viewPager.setAdapter(adapter);
+        tabPosition = tabLayout.getSelectedTabPosition();
+        sharedPreferences = getContext().getSharedPreferences("com.mendozae.teamflickr", Context.MODE_PRIVATE);
 
 
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() { //sets an onTabSelected listener for when tabs are selected
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition()); //viewPager sets the tab position to the one that was selected
+                Log.i("info", "Selected tab");
+                tabPosition = tab.getPosition();
+                sharedPreferences.edit().putInt("Tab", tabPosition).apply();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
         setupUI(getView().findViewById(R.id.framelayout));
 
         searchManager =
@@ -68,8 +93,9 @@ public class SearchFeed extends Fragment implements SearchView.OnQueryTextListen
         searchView.setSubmitButtonEnabled(true);
         searchView.setBackgroundColor(Color.parseColor("#373738"));
 
-        searchView.setSearchableInfo( searchManager.getSearchableInfo(new
-                ComponentName(getContext(),SearchableActivity.class)));
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(new
+                    ComponentName(getContext(), SearchableActivity.class)));
+
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
@@ -78,14 +104,14 @@ public class SearchFeed extends Fragment implements SearchView.OnQueryTextListen
             }
         });
 
-        mRecyclerView = (RecyclerView) getView().findViewById(R.id.recyclerview);
-        mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        images = new ArrayList<>();
-        mAdapter = new MyAdapter(images);
+    }
 
-        mRecyclerView.setAdapter(mAdapter);
+    @Override
+    public void onStart(){
+        super.onStart();
+
+
+
 
     }
 
@@ -93,6 +119,8 @@ public class SearchFeed extends Fragment implements SearchView.OnQueryTextListen
     public boolean onQueryTextSubmit(String query) {
         // your search methods
         searchView.clearFocus();
+
+
         return true;
     }
 
@@ -132,64 +160,7 @@ public class SearchFeed extends Fragment implements SearchView.OnQueryTextListen
                 activity.getCurrentFocus().getWindowToken(), 0);
     }
 
-    public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-        private List<String> images;
 
-        // Provide a reference to the views for each data item
-        // Complex data items may need more than one view per item, and
-        // you provide access to all the views for a data item in a view holder
-        public class MyViewHolder extends RecyclerView.ViewHolder {
-            // each data item is just a string in this case
-            public ImageView mImageView;
-            public MyViewHolder(View v) {
-                super(v);
-
-                mImageView = (ImageView) v.findViewById(R.id.image);
-
-            }
-        }
-
-        // Provide a suitable constructor (depends on the kind of dataset)
-        public MyAdapter(List<String> images) {
-            this.images = images;
-        }
-
-        // Create new views (invoked by the layout manager)
-        @Override
-        public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            // create a new view
-            View v =  LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.layout_custom_photos, parent, false);
-
-           MyViewHolder vh = new MyViewHolder(v);
-            return vh;
-        }
-
-        // Replace the contents of a view (invoked by the layout manager)
-        @Override
-        public void onBindViewHolder(MyAdapter.MyViewHolder holder, int position) {
-            // - get element from your dataset at this position
-            // - replace the contents of the view with that element
-
-            holder.mImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(getContext(), FullscreenImage.class);
-                    intent.putExtra("image", R.drawable.elephant);
-                    startActivity(intent);
-                }
-            });
-
-
-
-        }
-
-        // Return the size of your dataset (invoked by the layout manager)
-        @Override
-        public int getItemCount() {
-            return images.size();
-        }
-    }
 
 
 }

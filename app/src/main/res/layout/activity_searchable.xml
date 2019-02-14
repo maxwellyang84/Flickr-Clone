@@ -7,6 +7,13 @@
     android:id="@+id/relativelayout"
     tools:context=".SearchableActivity">
 
+    <ListView
+        android:id="@+id/listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/backtoolbar"
+        />
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/backtoolbar"
         android:layout_width="match_parent"
@@ -20,5 +27,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/backtoolbar"
-        />
+        >
+
+    </android.support.v7.widget.RecyclerView>
+
 </RelativeLayout>

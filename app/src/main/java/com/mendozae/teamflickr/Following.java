@@ -262,7 +262,6 @@ public class Following extends AppCompatActivity {
             }
             ImageView imageView = (ImageView) view.findViewById(R.id.pfp);
             TextView textView_name = (TextView) view.findViewById(R.id.name);
-            TextView textView_desc = (TextView) view.findViewById(R.id.desc);
             viewHolder.followButton.setText(followedOrNot.get(index));
             textView_name.setText(followingNames.get(index));
 

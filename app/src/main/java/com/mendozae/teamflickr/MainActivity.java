@@ -137,7 +137,8 @@ public class MainActivity extends AppCompatActivity {
 
         userInfo2.put("Followers", new ArrayList<String>());
         userInfo2.put("Following", new ArrayList<String>());
-        userInfo2.put("Liked", new ArrayList<String>());
+        userInfo2.put("Likes", new ArrayList<String>());
+        userInfo2.put("Uploads", new ArrayList<String>());
         userInfo2.put("FollowingOrNotFollowing", new ArrayList<String>());
         userInfo2.put("FollowingOrNotFollowers", new ArrayList<String>());
         userInfo2.put("AboutKeys", title);

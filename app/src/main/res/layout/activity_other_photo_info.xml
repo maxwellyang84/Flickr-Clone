@@ -1,9 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/backgroundToolbarColor"
     tools:context=".OtherPhotoInfo">
 
-</android.support.constraint.ConstraintLayout>
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/infotoolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimaryDark"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ToolBarStyle"
+        app:title="Info" />
+
+
+    <TextView
+        android:id="@+id/inputtitle"
+        android:layout_width="296dp"
+        android:layout_height="33dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="84dp"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/inputdescription"
+        android:layout_width="293dp"
+        android:layout_height="33dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="150dp"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/inputlocation"
+        android:layout_width="297dp"
+        android:layout_height="33dp"
+        android:layout_below="@+id/inputdescription"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="47dp"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/inputuser"
+        android:layout_width="match_parent"
+        android:layout_height="33dp"
+        android:layout_below="@+id/location"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="false"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="47dp"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/inputtags"
+        android:layout_width="match_parent"
+        android:layout_height="33dp"
+        android:layout_below="@+id/inputuser"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="false"
+        android:layout_marginStart="89dp"
+        android:layout_marginTop="47dp"
+        android:layout_marginBottom="186dp"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="33dp"
+        android:layout_alignTop="@+id/inputtitle"
+        android:layout_alignParentStart="true"
+        android:text="Title:"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="wrap_content"
+        android:layout_height="33dp"
+        android:layout_alignBottom="@+id/inputdescription"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="1dp"
+        android:text="Description:"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/location"
+        android:layout_width="wrap_content"
+        android:layout_height="33dp"
+        android:layout_alignBottom="@+id/inputlocation"
+        android:layout_alignParentStart="true"
+        android:text="Location:"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/user"
+        android:layout_width="wrap_content"
+        android:layout_height="33dp"
+        android:layout_alignBottom="@+id/inputuser"
+        android:layout_alignParentStart="true"
+        android:text="Posted By:"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tags"
+        android:layout_width="wrap_content"
+        android:layout_height="33dp"
+        android:layout_alignTop="@+id/inputtags"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:text="Tags:"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:layout_alignBottom="@id/inputtags"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/timecreated"
+        android:layout_width="wrap_content"
+        android:layout_height="33dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="483dp"
+        android:text="Time Created:"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:textSize="16sp" />
+
+
+    <TextView
+        android:id="@+id/inputtimecreated"
+        android:layout_width="315dp"
+        android:layout_height="33dp"
+        android:layout_alignBottom="@+id/timecreated"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="120dp"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:textSize="16sp" />
+
+</RelativeLayout>

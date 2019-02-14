@@ -60,7 +60,7 @@ public class Faves extends Fragment {
              if(task.isSuccessful()){
                  DocumentSnapshot snapshot = task.getResult();
                  if (snapshot.exists()) {
-                      likes = (ArrayList<String>) snapshot.get("Liked");
+                      likes = (ArrayList<String>) snapshot.get("Likes");
                      if(likes != null){
                          // use this setting to improve performance if you know that changes
                          // in content do not change the layout size of the RecyclerView
