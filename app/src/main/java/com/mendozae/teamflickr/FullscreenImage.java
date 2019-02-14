@@ -44,6 +44,8 @@ public class FullscreenImage extends AppCompatActivity {
 
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -51,6 +53,8 @@ public class FullscreenImage extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen_image);
+       final int tabIconColor = ContextCompat.getColor(FullscreenImage.this, R.color.tabUnselectedIconColor);
+       final int iconColor = ContextCompat.getColor(FullscreenImage.this, R.color.starSelectedColor);
 
         Intent intent = getIntent();
         URL = intent.getStringExtra("Image");
@@ -66,9 +70,25 @@ public class FullscreenImage extends AppCompatActivity {
         query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for(QueryDocumentSnapshot snapshot: queryDocumentSnapshots){
+                for(final QueryDocumentSnapshot snapshot: queryDocumentSnapshots){
                     docRef = snapshot.getReference();
+                    infoButton = (Button) findViewById(R.id.infobutton);
+                    infoButton.getBackground().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                    infoButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                                            Intent intent;
+                                            if(UserProfile.user.equals((String) snapshot.get("User"))) {
+                                                intent = new Intent(FullscreenImage.this, PhotoInfo.class);
+                                            }else{
+                                                intent = new Intent(FullscreenImage.this, OtherPhotoInfo.class);
+                                            }
+                                            intent.putExtra("Image", URL);
+                                            startActivity(intent);
+                        }
+                    });
                 }
+
             }
         });
 
@@ -83,8 +103,7 @@ public class FullscreenImage extends AppCompatActivity {
 
                         likeButton = (Button) findViewById(R.id.likebutton);
                          likedURLs = (ArrayList<String>) snapshot.get("Likes");
-                        int tabIconColor = ContextCompat.getColor(FullscreenImage.this, R.color.tabUnselectedIconColor);
-                        int iconColor = ContextCompat.getColor(FullscreenImage.this, R.color.starSelectedColor);
+
 
 
                          if(likedURLs.contains(URL)){
@@ -97,10 +116,7 @@ public class FullscreenImage extends AppCompatActivity {
 
                         exitButton = (Button) findViewById(R.id.exitbutton);
                         likeButton = (Button) findViewById(R.id.likebutton);
-                        infoButton = (Button) findViewById(R.id.infobutton);
 
-
-                        infoButton.getBackground().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
                         likeButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -119,19 +135,7 @@ public class FullscreenImage extends AppCompatActivity {
                             }
                         });
 
-                        infoButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent intent;
-                                if(UserProfile.currentUser.equals(UserProfile.user)) {
-                                    intent = new Intent(FullscreenImage.this, PhotoInfo.class);
-                                }else{
-                                    intent = new Intent(FullscreenImage.this, OtherPhotoInfo.class);
-                                }
-                                intent.putExtra("Image", URL);
-                                startActivity(intent);
-                            }
-                        });
+
 
 
 
