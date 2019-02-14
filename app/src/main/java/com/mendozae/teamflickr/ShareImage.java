@@ -18,6 +18,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -75,7 +76,7 @@ public class ShareImage extends AppCompatActivity {
     ProgressDialog progressDialog;
     int uid;
 
-    private void saveToFB(File f) {
+    private void saveToFB(final File f) {
         //upload to firebase storage
         //link to user (user should have a list of all images posted)
         //create a collection to hold about stuff
@@ -83,7 +84,7 @@ public class ShareImage extends AppCompatActivity {
         progressDialog.setMessage("Uploading Image...");
         progressDialog.show();
 
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+        final StorageReference storageReference = FirebaseStorage.getInstance().getReference();
         final FirebaseAuth auth = FirebaseAuth.getInstance();
 
         final Map<String, String> photoInfo = new HashMap<>();
@@ -97,6 +98,7 @@ public class ShareImage extends AppCompatActivity {
 
         String tags[] = about[1].getText().toString().split(" ");
         photoTags.put("Tags", Arrays.asList(tags));
+        photoTags.put("Liked By", new ArrayList<String>());
 
         //add photo document
         final FirebaseFirestore mStore = FirebaseFirestore.getInstance();
@@ -104,53 +106,55 @@ public class ShareImage extends AppCompatActivity {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 uid = queryDocumentSnapshots.size();
+                final StorageReference imageRef = storageReference.child("img/" + auth.getCurrentUser().getUid()  + "/" + uid + ".jpg");
+                try {
+                    final UploadTask uploadTask = imageRef.putStream(new FileInputStream(f));
+                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.hide();
+                            //grab URI
+                            imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    photoInfo.put("URI", uri.toString());
+
+                                    //add Timestamp to photo field
+                                    final Map<String, FieldValue> photoTime = new HashMap<>();
+                                    photoTime.put("Time Created", FieldValue.serverTimestamp());
+
+                                    //add photo information
+                                    mStore.collection("Photos").document(Integer.toString(uid)).set(photoInfo, SetOptions.merge());
+                                    mStore.collection("Photos").document(Integer.toString(uid)).set(photoTags, SetOptions.merge());
+                                    mStore.collection("Photos").document(Integer.toString(uid)).set(photoTime, SetOptions.merge());
+
+                                    //link photo to user
+                                    mStore.collection("Users").document(auth.getCurrentUser().getDisplayName()).update("Uploads", FieldValue.arrayUnion(Integer.toString(uid)));
+                                }
+                            });
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(ShareImage.this, "Upload Failed", Toast.LENGTH_SHORT).show();
+                            progressDialog.hide();
+                        }
+                    }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                            Intent intent = new Intent(ShareImage.this, UserInterface.class);
+                            intent.putExtra("Tab", 2);
+                            startActivity(intent);
+                        }
+                    });
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
             }
         });
 
-        final StorageReference imageRef = storageReference.child("img/" + auth.getCurrentUser().getUid()  + "/" + uid + ".jpg");
 
-        try {
-            final UploadTask uploadTask = imageRef.putStream(new FileInputStream(f));
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    progressDialog.hide();
-                    //grab URI
-                    imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            photoInfo.put("URI", uri.toString());
 
-                            //add Timestamp to photo field
-                            final Map<String, FieldValue> photoTime = new HashMap<>();
-                            photoTime.put("Time Created", FieldValue.serverTimestamp());
-
-                            //add photo information
-                            mStore.collection("Photos").document(Integer.toString(uid)).set(photoInfo, SetOptions.merge());
-                            mStore.collection("Photos").document(Integer.toString(uid)).set(photoTags, SetOptions.merge());
-                            mStore.collection("Photos").document(Integer.toString(uid)).set(photoTime, SetOptions.merge());
-
-                            //link photo to user
-                            mStore.collection("Users").document(auth.getCurrentUser().getDisplayName()).update("Uploads", FieldValue.arrayUnion(Integer.toString(uid)));
-                        }
-                    });
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(ShareImage.this, "Upload Failed", Toast.LENGTH_SHORT).show();
-                    progressDialog.hide();
-                }
-            }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                    Intent intent = new Intent(ShareImage.this, UserInterface.class);
-                    intent.putExtra("Tab", 2);
-                    startActivity(intent);
-                }
-            });
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
     }
 }

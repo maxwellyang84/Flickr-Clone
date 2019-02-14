@@ -2,29 +2,29 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white">
 
     <ImageView
         android:id="@+id/imageHolder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/imageView2"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginRight="15dp"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        tools:srcCompat="@drawable/cambutton" />
 
     <TextView
         android:id="@+id/userHolder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/imageHolder"
+        android:layout_alignParentTop="true"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:layout_toEndOf="@+id/imageView2"
         android:fontFamily="@font/roboto"
         android:text="user"
@@ -36,22 +36,24 @@
         android:id="@+id/imageView2"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_below="@+id/imageHolder"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="0dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
         app:srcCompat="@drawable/ic_account" />
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/imageView2"
-        android:layout_alignStart="@+id/imageView2"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_below="@+id/imageHolder"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="8dp"
+        android:paddingStart="5dp"
         android:text="title "
-        android:textSize="16sp" />
+        android:textColor="@color/common_google_signin_btn_text_dark_focused"
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/numLike"
@@ -71,17 +73,37 @@
         android:layout_below="@+id/imageHolder"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="15dp"
+        android:layout_marginEnd="5dp"
+        android:paddingEnd="5dp"
         app:srcCompat="@drawable/ic_info" />
 
-    <ImageView
+    <Button
         android:id="@+id/star"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_below="@+id/imageHolder"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="2dp"
         android:layout_toStartOf="@+id/numLike"
+        android:background="@drawable/ic_star"
         app:srcCompat="@drawable/ic_star" />
+
+    <ImageView
+        android:id="@+id/border"
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:layout_below="@+id/title"
+        android:layout_marginTop="8dp"
+        app:srcCompat="@color/colorPrimaryDark" />
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="5dp"
+        android:text="TextView" />
 
 </RelativeLayout>
