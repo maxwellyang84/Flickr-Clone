@@ -3,7 +3,10 @@ package com.mendozae.teamflickr;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.UiThread;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -21,6 +24,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -42,6 +46,7 @@ public class Faves extends Fragment {
     private ArrayList<String> likes;
     private FirebaseFirestore mStore;
     private DocumentReference userRef;
+    private SwipeRefreshLayout swipeRefresh;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,6 +61,9 @@ public class Faves extends Fragment {
         mRecyclerView = (RecyclerView) getView().findViewById(R.id.recyclerview);
 
         likes = new ArrayList<String>();
+
+
+
 
         mStore = FirebaseFirestore.getInstance();
         userRef = mStore.collection("Users").document(UserProfile.currentUser);
@@ -74,23 +82,29 @@ public class Faves extends Fragment {
 
 
                          // use a linear layout manager
-                         mLayoutManager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
+                         mLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
                          mRecyclerView.setLayoutManager(mLayoutManager);
 
                          // specify an adapter (see also next example)
                          mAdapter = new MyAdapter(likes);
+
                          mRecyclerView.setAdapter(mAdapter);
+
                          userRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
                              @Override
                              public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                                Log.i("here", "faves");
                                  if(e!=null){
                                      return;
                                  }
 
                                  if(documentSnapshot !=null && documentSnapshot.exists()){
-                                     likes = (ArrayList<String>) documentSnapshot.get("Likes");
+                                     Log.i("Here", "Faves");
+                                     likes.clear();
+                                     likes.addAll((ArrayList<String>) documentSnapshot.get("Likes"));
                                      Collections.reverse(likes);
                                      mAdapter.notifyDataSetChanged();
+
 
                                  }else{
                                      Log.i("info", "it's null");
@@ -106,6 +120,7 @@ public class Faves extends Fragment {
 
 
     }
+
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.myViewHolder>{
         ArrayList<String> likes;
@@ -158,6 +173,8 @@ public class Faves extends Fragment {
 
             }
         }
+
+
     }
 
 }
