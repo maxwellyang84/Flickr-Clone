@@ -308,7 +308,6 @@ public class OtherFollowers extends AppCompatActivity {
             }
             ImageView imageView = (ImageView) view.findViewById(R.id.pfp);
             TextView textView_name = (TextView) view.findViewById(R.id.name);
-            TextView textView_desc = (TextView) view.findViewById(R.id.desc);
             if(followers.get(index).equals(UserProfile.user)){
                 viewHolder.followButton.setVisibility(View.GONE);
             }else {

@@ -8,8 +8,8 @@
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -17,7 +17,7 @@
         android:label="Flickr"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".ShareImage"></activity>
+        <activity android:name=".ShareImage" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,6 +32,9 @@
             <meta-data
                 android:name="android.app.default_searchable"
                 android:value=".SearchableActivity" />
+
+
+
         </activity>
         <activity android:name=".Followers" />
         <activity android:name=".Following" />
@@ -41,6 +44,7 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
         <activity android:name=".OtherFollowers" />
         <activity android:name=".OtherFollowing" />
         <activity android:name=".SearchableActivity">
@@ -56,7 +60,7 @@
         </activity>
         <activity android:name=".FullscreenImage" />
         <activity android:name=".PhotoInfo" />
-        <activity android:name=".OtherPhotoInfo"></activity>
+        <activity android:name=".OtherPhotoInfo" />
     </application>
 
 </manifest>
