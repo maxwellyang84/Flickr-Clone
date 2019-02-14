@@ -86,7 +86,7 @@ public class Public extends Fragment {
                 query.addSnapshotListener(new com.google.firebase.firestore.EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        URLs = new ArrayList<>();
+                        URLs.clear();
                         for(QueryDocumentSnapshot snapshot: queryDocumentSnapshots){
                             URLs.add((String) snapshot.get("URI"));
                         }
