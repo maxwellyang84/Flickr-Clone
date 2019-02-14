@@ -48,9 +48,6 @@ public class FullscreenImage extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen_image);
        final int tabIconColor = ContextCompat.getColor(FullscreenImage.this, R.color.tabUnselectedIconColor);

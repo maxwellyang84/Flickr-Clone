@@ -1,6 +1,8 @@
 package com.mendozae.teamflickr;
 
 import android.graphics.Color;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -10,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -17,13 +20,17 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 
 public class PhotoInfo extends AppCompatActivity {
 
     Toolbar toolbar;
-    TextView title, description, location, user, tag, inputuser;
+    TextView title, description, location, user, tag, inputuser, inputtimecreated;
     EditText inputtitle, inputdescription, inputlocation, inputtags;
     private FirebaseFirestore mStore;
     private CollectionReference photoRef;
@@ -47,6 +54,7 @@ public class PhotoInfo extends AppCompatActivity {
         location = (TextView) findViewById(R.id.location);
         user = (TextView) findViewById(R.id.user);
         tag = (TextView) findViewById(R.id.tags);
+        inputtimecreated = findViewById(R.id.inputtimecreated);
 
         inputuser = (TextView) findViewById(R.id.inputuser);
 
@@ -59,6 +67,7 @@ public class PhotoInfo extends AppCompatActivity {
         photoRef = mStore.collection("Photos");
         Query query = photoRef.whereEqualTo("URI", URL);
         query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for(final QueryDocumentSnapshot snapshot: queryDocumentSnapshots){
@@ -77,6 +86,15 @@ public class PhotoInfo extends AppCompatActivity {
                     }
                     inputtags.setText(totalTags);
                     inputuser.setText(firebaseUser);
+
+                    //input time created
+                    Timestamp timestamp = (Timestamp) snapshot.get("Time Created");
+                    LocalDateTime dateTime = LocalDateTime.ofEpochSecond(timestamp.getSeconds() , 0, ZoneOffset.UTC);
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy - HH:mm a", Locale.ENGLISH);
+                    String formattedDate = dateTime.format(formatter);
+                    inputtimecreated.setText(formattedDate);
+
+
                     final DocumentReference docRef = snapshot.getReference();
                     inputtitle.addTextChangedListener(new TextWatcher() {
                         @Override

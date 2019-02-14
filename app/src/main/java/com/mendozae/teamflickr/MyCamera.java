@@ -1,23 +1,34 @@
 package com.mendozae.teamflickr;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.Instrumentation;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.preference.PreferenceManager;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +39,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+import static android.app.Activity.RESULT_OK;
+import static android.provider.DocumentsContract.isDocumentUri;
 
 
 /**
@@ -40,6 +53,7 @@ import java.util.Objects;
  */
 public class MyCamera extends Fragment implements SurfaceHolder.Callback{
     final int  CAMERA_REQUEST_CODE = 1;
+    final int GALLERY_REQUEST_CODE = 2;
     Camera camera;
     SurfaceView surfaceView;
     SurfaceHolder surfaceHolder;
@@ -52,6 +66,15 @@ public class MyCamera extends Fragment implements SurfaceHolder.Callback{
     ImageView cancel;
     ImageView imageHolder;
     Bitmap rotateBitmap;
+    ImageView cameraRoll;
+
+    String[] projection = new String[]{
+            MediaStore.Images.ImageColumns._ID,
+            MediaStore.Images.ImageColumns.DATA,
+            MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
+            MediaStore.Images.ImageColumns.DATE_TAKEN,
+            MediaStore.Images.ImageColumns.MIME_TYPE
+    };
 
 
     private void captureImage() {
@@ -65,11 +88,88 @@ public class MyCamera extends Fragment implements SurfaceHolder.Callback{
         cancel.setVisibility(View.GONE);
         imageHolder.setVisibility(View.GONE);
     }
+
+    //Camera roll ==================================================================================
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK)    {
+            switch (requestCode) {
+                case 0:
+                    Uri galleryImageUri = data.getData();
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), galleryImageUri);
+                        String pathName = saveToInternalStorage(bitmap);
+                        Intent intent = new Intent (getContext(), ShareImage.class);
+                        intent.putExtra("filename", pathName);
+                        startActivity(intent);
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+            }
+        }
+    }
+    //==============================================================================================
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, GALLERY_REQUEST_CODE);
+        } else {
+            final Cursor cursor = getContext().getContentResolver()
+                    .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
+                            null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
+            // Put it in the image view
+            if (cursor.moveToFirst()) {
+                String imageLocation = cursor.getString(1);
+                File imageFile = new File(imageLocation);
+                if (imageFile.exists()) {   // TODO: is there a better way to do this?
+                    Bitmap bm = BitmapFactory.decodeFile(imageLocation);
+                    cameraRoll.setImageBitmap(bm);
+                }
+            }
+        }
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_camera, container, false);
         surfaceView = view.findViewById(R.id.surfaceView);
+
+        cameraRoll = view.findViewById(R.id.cameraRoll);
+
+        // Find the last picture
+        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, GALLERY_REQUEST_CODE);
+        } else {
+            final Cursor cursor = getContext().getContentResolver()
+                    .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
+                            null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
+            // Put it in the image view
+            if (cursor.moveToFirst()) {
+                String imageLocation = cursor.getString(1);
+                File imageFile = new File(imageLocation);
+                if (imageFile.exists()) {   // TODO: is there a better way to do this?
+                    Bitmap bm = BitmapFactory.decodeFile(imageLocation);
+                    cameraRoll.setImageBitmap(bm);
+                }
+            }
+        }
+
+        cameraRoll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+
+                Intent chooser = Intent.createChooser(intent, "Choose a Picture");
+                startActivityForResult(chooser, 0);
+            }
+        });
+
         capture = view.findViewById(R.id.capture);
         capture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,7 +186,6 @@ public class MyCamera extends Fragment implements SurfaceHolder.Callback{
                 String pathName = saveToInternalStorage(rotateBitmap);
                 Intent intent = new Intent(getContext(), ShareImage.class);
                 intent.putExtra("filename", pathName);
-
 
                 startActivity(intent);
                 deleteImage();
@@ -161,7 +260,6 @@ public class MyCamera extends Fragment implements SurfaceHolder.Callback{
                 e.printStackTrace();
             }
         }
-        Toast.makeText(getContext(), directory.getAbsolutePath(), Toast.LENGTH_SHORT).show();
         return directory.getAbsolutePath();
     }
 
@@ -200,10 +298,10 @@ public class MyCamera extends Fragment implements SurfaceHolder.Callback{
         camera.startPreview();
     }
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {    }
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder holder) { }
+    public void surfaceDestroyed(SurfaceHolder holder) {}
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -216,6 +314,20 @@ public class MyCamera extends Fragment implements SurfaceHolder.Callback{
                 } else {
                     Toast.makeText(getContext(), "Access to camera needed", Toast.LENGTH_SHORT).show();
                 }
+            case GALLERY_REQUEST_CODE:
+                final Cursor cursor = getContext().getContentResolver()
+                        .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
+                                null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
+                // Put it in the image view
+                if (cursor.moveToFirst()) {
+                    String imageLocation = cursor.getString(1);
+                    File imageFile = new File(imageLocation);
+                    if (imageFile.exists()) {   // TODO: is there a better way to do this?
+                        Bitmap bm = BitmapFactory.decodeFile(imageLocation);
+                        cameraRoll.setImageBitmap(bm);
+                    }
+                }
         }
     }
+
 }
