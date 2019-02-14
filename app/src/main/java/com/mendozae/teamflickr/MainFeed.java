@@ -71,8 +71,8 @@ public class MainFeed extends Fragment {
         customAdapter = new CustomAdapter(getContext());
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
         recyclerView.setAdapter(customAdapter);
+
 
         mStore.collection("Users").document(mAuth.getCurrentUser().getDisplayName()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -93,10 +93,12 @@ public class MainFeed extends Fragment {
                         }
                     });
                 }
+
+
+
             }
         });
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -122,9 +124,17 @@ public class MainFeed extends Fragment {
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void onSuccess(final DocumentSnapshot documentSnapshot) {
+
                     // set image
                     Glide.with(getContext()).load(documentSnapshot.get("URI")).into(vHolder.photo);
-
+                    vHolder.photo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent (getContext(), FullscreenImage.class);
+                            intent.putExtra("Image", documentSnapshot.get("URI").toString());
+                            startActivity(intent);
+                        }
+                    });
                     //set user and on click method
                     vHolder.user.setText(documentSnapshot.get("User").toString());
                     vHolder.user.setOnClickListener(new View.OnClickListener() {
@@ -148,48 +158,47 @@ public class MainFeed extends Fragment {
                     vHolder.time.setText(formattedDate);
 
                     //set star color (on defualt the star is set to "not like" mode)
-                    vHolder.star.getBackground().setColorFilter(ContextCompat.getColor(getContext(), R.color.tabUnselectedIconColor), PorterDuff.Mode.SRC_IN);
-                    ArrayList<String> likedBy = (ArrayList<String>) documentSnapshot.get("Liked By");
-                    if(!likedBy.isEmpty()) {  //No one has liked the photo yet
-                        for (String user : likedBy) {
-                            if (user == mAuth.getCurrentUser().getDisplayName())
-                                Log.i("Im here setting", user);
-                                //user has liked current photo
-                                vHolder.star.getBackground().setColorFilter(ContextCompat.getColor(getContext(), R.color.starSelectedColor), PorterDuff.Mode.SRC_IN);
-                            break;
+                    /*if (init == 0){
+                        init = 1;
+                        ArrayList<String> likedBy = (ArrayList<String>) documentSnapshot.get("Liked By");
+                        if (likedBy.contains(mAuth.getCurrentUser().getDisplayName())) {
+                            vHolder.star.getBackground().setColorFilter(ContextCompat.getColor(getContext(), R.color.starSelectedColor), PorterDuff.Mode.SRC_IN);
+                            state = 1;
+                        } else {
+                            vHolder.star.getBackground().setColorFilter(ContextCompat.getColor(getContext(), R.color.tabUnselectedIconColor), PorterDuff.Mode.SRC_IN);
+                            state = 0;
+                        }
+                    } else {
+                        if (state == 0){
+                            vHolder.star.getBackground().setColorFilter(ContextCompat.getColor(getContext(), R.color.tabUnselectedIconColor), PorterDuff.Mode.SRC_IN);
+                        } else {
+                            vHolder.star.getBackground().setColorFilter(ContextCompat.getColor(getContext(), R.color.starSelectedColor), PorterDuff.Mode.SRC_IN);
                         }
                     }
-                    // set star on click
+
+                  // set star on click
                     vHolder.star.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             //check if currentUser has liked the image or not
-                            ArrayList<String> likedBy = (ArrayList<String>) documentSnapshot.get("Liked By");
-                            int state = 0;
-                            if(!likedBy.isEmpty()) { //No one has liked the photo yet
-                                for (String user : likedBy) {
-                                    if (user == mAuth.getCurrentUser().getDisplayName())
-                                        //user has liked current photo
-                                        Log.i("im here", user);
-                                        state = 1;
-                                    break;
-                                }
-                            }
-                            if (state == 0){ //not liked yet -- set to like
-                                //change icon to blue
-                                vHolder.star.getBackground().setColorFilter(ContextCompat.getColor(getContext(), R.color.starSelectedColor), PorterDuff.Mode.SRC_IN);
+                           // ArrayList<String> likedBy = (ArrayList<String>) documentSnapshot.get("Liked By");
+                            //if(likedBy.contains(mAuth.getCurrentUser().getDisplayName()))  {
+                            if (state == 1){
+//                                vHolder.star.getBackground().setColorFilter(ContextCompat.getColor(getContext(), R.color.tabUnselectedIconColor), PorterDuff.Mode.SRC_IN);
+                                mStore.collection("Photos").document(followingPhotos.get(index)).update("Liked By", FieldValue.arrayRemove(mAuth.getCurrentUser().getDisplayName()));
+                                mStore.collection("Users").document(mAuth.getCurrentUser().getDisplayName()).update("Likes", FieldValue.arrayRemove(documentSnapshot.get("URI")));
+                                state = 0;
+                            } else {
+//                                vHolder.star.getBackground().setColorFilter(ContextCompat.getColor(getContext(), R.color.starSelectedColor), PorterDuff.Mode.SRC_IN);
                                 //update photo fields (Liked By -- should changed like count) TODO take out Number of Likes (just do size of Liked By)
                                 mStore.collection("Photos").document(followingPhotos.get(index)).update("Liked By", FieldValue.arrayUnion(mAuth.getCurrentUser().getDisplayName()));
                                 //update user field
                                 mStore.collection("Users").document(mAuth.getCurrentUser().getDisplayName()).update("Likes", FieldValue.arrayUnion(documentSnapshot.get("URI")));
-                            } else {
-                                vHolder.star.getBackground().setColorFilter(ContextCompat.getColor(getContext(), R.color.tabUnselectedIconColor), PorterDuff.Mode.SRC_IN);
-                                mStore.collection("Photos").document(followingPhotos.get(index)).update("Liked By", FieldValue.arrayRemove(mAuth.getCurrentUser().getDisplayName()));
-                                mStore.collection("Users").document(mAuth.getCurrentUser().getDisplayName()).update("Likes", FieldValue.arrayRemove(documentSnapshot.get("URI")));
+                                state = 1;
                             }
                             notifyDataSetChanged();
                         }
-                    });
+                    });*/
 
                     //set num likes
                     vHolder.numLikes.setText(Integer.toString(((ArrayList<String>) documentSnapshot.get("Liked By")).size()));
@@ -203,8 +212,6 @@ public class MainFeed extends Fragment {
                             startActivity(intent);
                         }
                     });
-
-
                 }
             });
         }
@@ -218,7 +225,6 @@ public class MainFeed extends Fragment {
             private ImageView photo, info;
             private TextView user, title, time, numLikes;
             private Button star;
-
             public ViewHolder(View view){
                 super(view);
                 this.photo = view.findViewById(R.id.imageHolder);
