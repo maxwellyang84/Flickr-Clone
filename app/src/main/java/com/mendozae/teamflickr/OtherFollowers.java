@@ -99,7 +99,7 @@ public class OtherFollowers extends AppCompatActivity {
                                                 Intent intent;
                                                 if (name.equals(UserProfile.user)) {
                                                     intent = new Intent(OtherFollowers.this, UserInterface.class);
-                                                    intent.putExtra("Tab", 2);
+                                                    MainActivity.userInterfaceSharedPreferences.edit().putInt("Tab", 2).apply();
 
                                                 } else {
                                                     intent = new Intent(OtherFollowers.this, OtherUsersProfile.class);

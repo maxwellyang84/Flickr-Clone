@@ -97,7 +97,7 @@ public class OtherFollowing extends AppCompatActivity {
                                                 Intent intent;
                                                 if (name.equals(UserProfile.user)) {
                                                     intent = new Intent(OtherFollowing.this, UserInterface.class);
-                                                   intent.putExtra("Tab", 2);
+                                                    MainActivity.userInterfaceSharedPreferences.edit().putInt("Tab", 2).apply();
                                                 } else {
                                                     intent = new Intent(OtherFollowing.this, OtherUsersProfile.class);
                                                     intent.putExtra("Name", name);

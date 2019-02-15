@@ -67,7 +67,7 @@ public class SearchableActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.listview);
 
 
-        int tab = SearchFeed.searchFeedSharedPreferences.getInt("Tab", 2);
+        int tab = SearchFeed.searchFeedSharedPreferences.getInt("SearchTab", 2);
 
         if(tab == 0) {
             listView.setVisibility(View.GONE);
@@ -103,6 +103,7 @@ public class SearchableActivity extends AppCompatActivity {
                         intent = new Intent(SearchableActivity.this, OtherUsersProfile.class);
                     }else{
                         intent = new Intent(SearchableActivity.this, UserInterface.class);
+                        MainActivity.userInterfaceSharedPreferences.edit().putInt("Tab", 2).apply();
                     }
                     intent.putExtra("Name", users.get(position));
                     startActivity(intent);

@@ -167,7 +167,7 @@ sends the UI to UserInterface class
         Intent intent = new Intent(getApplicationContext(), UserInterface.class);
         userInterfaceSharedPreferences = this.getSharedPreferences("com.mendozae.teamflickr", Context.MODE_PRIVATE);
         userInterfaceSharedPreferences.edit().putString("username", mAuth.getCurrentUser().getDisplayName()).apply();
-        userInterfaceSharedPreferences.edit().putInt("Tab", 2);
+        userInterfaceSharedPreferences.edit().putInt("Tab", 0).apply();
         startActivity(intent);
     }
     public void switcher (View view){

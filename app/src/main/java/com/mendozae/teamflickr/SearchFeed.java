@@ -62,6 +62,7 @@ public class SearchFeed extends Fragment implements SearchView.OnQueryTextListen
         viewPager.setAdapter(adapter);
         tabPosition = tabLayout.getSelectedTabPosition();
         searchFeedSharedPreferences = getContext().getSharedPreferences("com.mendozae.teamflickr", Context.MODE_PRIVATE);
+        searchFeedSharedPreferences.edit().putInt("SearchTab", tabPosition).apply();
 
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -71,7 +72,7 @@ public class SearchFeed extends Fragment implements SearchView.OnQueryTextListen
                 viewPager.setCurrentItem(tab.getPosition()); //viewPager sets the tab position to the one that was selected
                 Log.i("info", "Selected tab");
                 tabPosition = tab.getPosition();
-                searchFeedSharedPreferences.edit().putInt("Tab", tabPosition).apply();
+                searchFeedSharedPreferences.edit().putInt("SearchTab", tabPosition).apply();
             }
 
             @Override
