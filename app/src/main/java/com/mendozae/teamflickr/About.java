@@ -51,6 +51,8 @@ public class About extends Fragment {
 
         super.onCreate(SavedInstanceState);
 
+
+
     }
 
     @Override

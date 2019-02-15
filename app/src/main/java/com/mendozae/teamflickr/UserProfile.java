@@ -118,7 +118,7 @@ public class UserProfile extends Fragment {
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#F5F5F5")); //sets the tab indicator color
 
         final ViewPager viewPager = (ViewPager) getView().findViewById(R.id.page); //declares viewpager
-        final UserProfilePagerAdapter adapter = new UserProfilePagerAdapter(getFragmentManager(),tabLayout.getTabCount());
+        final UserProfilePagerAdapter adapter = new UserProfilePagerAdapter(getChildFragmentManager(),tabLayout.getTabCount());
         viewPager.setOffscreenPageLimit(2);
         viewPager.setAdapter(adapter);
 
